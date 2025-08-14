@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const EmployeeMasterEdit = () => {
   const [isActive, setIsActive] = useState(true);
+  const navigate = useNavigate();
   
   // Dummy data for the employee
   const [employeeData, setEmployeeData] = useState({
@@ -35,14 +37,22 @@ const EmployeeMasterEdit = () => {
   const reportTos = ['Jane Smith', 'Michael Johnson', 'Sarah Williams', 'David Brown', 'Emily Davis'];
 
   return (
-    <div className=" p-6">
-      <div className=" mx-auto">
+    <div className="p-6">
+      <div className="mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-gray-900">Edit Employee</h1>
-          <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
-            Save
-          </button>
+          <div className="flex space-x-4">
+            <button 
+              onClick={() => navigate('/settings/employee-master')}
+              className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-md font-medium"
+            >
+              Cancel
+            </button>
+            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+              Save
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -271,7 +281,7 @@ const EmployeeMasterEdit = () => {
               <div className="flex items-center">
                 <label className="text-sm font-medium text-gray-700 mr-4">Active Status*</label>
                 <div 
-                  className={`relative inline-flex h-8 w-14 items-center rounded-full cursor-pointer transition-colors ${isActive ? 'bg-orange-500' : 'bg-gray-200'}`}
+                  className={`relative inline-flex h-7 w-14 items-center rounded-full cursor-pointer transition-colors ${isActive ? 'bg-orange-500' : 'bg-gray-200'}`}
                   onClick={() => setIsActive(!isActive)}
                 >
                   <div className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-7' : 'translate-x-1'} shadow-sm`}>

@@ -1,103 +1,155 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import AddIcon from '@mui/icons-material/Add';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const CampaignTypeTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const columns = [
-    { id: 'enquiryNo', label: 'Enquiry No' },
-    { id: 'leadDate', label: 'Lead Date' },
-    { id: 'leadType', label: 'Lead Type' },
-    { id: 'leadSource', label: 'Lead Source' },
-    { id: 'prospect', label: 'Prospect' },
-    { id: 'mobileNumber', label: 'Mobile Number' },
-    { id: 'assignedBde', label: 'Assigned BDE' },
-    { id: 'assignedCs', label: 'Assigned CS' },
+    { id: 'serialNo', label: 'S1 No' },
+    { id: 'campaignType', label: 'Campaign Type' },
+    { id: 'description', label: 'Description' },
   ];
 
-  // example sample rows so UI looks like your screenshot
   const data = [
     {
       id: '1',
-      enquiryNo: 'L_001',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'ABC Pvt. Ltd.',
-      mobileNumber: '9123456789',
-      assignedBde: 'Anand Kumar',
-      assignedCs: 'Priya Menon',
+      serialNo: '01',
+      campaignType: 'Festival',
+      description: 'Seasonal festival campaigns and promotions',
       status: 'Active',
-      category: 'General',
+      category: 'Marketing'
     },
     {
       id: '2',
-      enquiryNo: 'L_002',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Mahindra Logistics',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      serialNo: '02',
+      campaignType: 'Gifting',
+      description: 'Corporate gifting and loyalty programs',
+      status: 'Active',
+      category: 'Sales'
     },
     {
       id: '3',
-      enquiryNo: 'L_003',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Prestige Group',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      serialNo: '03',
+      campaignType: 'Lead Generation',
+      description: 'Targeted campaigns for customer acquisition',
+      status: 'Active',
+      category: 'Marketing'
+    },
+    {
+      id: '4',
+      serialNo: '04',
+      campaignType: 'Branding',
+      description: 'Brand awareness and positioning campaigns',
+      status: 'Active',
+      category: 'Brand'
     },
   ];
 
   const headerButtons = [
     {
-      label: '+ Assign',
-      variant: 'outlined',
-      size: 'small',
-      startIcon: <AssignmentIndIcon />,
-      onClick: () => navigate(`${location.pathname}/assign`),
-      props: { sx: { textTransform: 'none' } },
-    },
-    {
-      label: '+ Import Leads',
+      label: 'Import Leads',
       variant: 'outlined',
       size: 'small',
       startIcon: <UploadFileIcon />,
       onClick: () => navigate(`${location.pathname}/import`),
-      props: { sx: { textTransform: 'none' } },
-    },
+      props: { 
+        sx: { 
+          textTransform: 'none',
+          borderColor: '#e0e0e0',
+          color: 'text.primary',
+          '&:hover': {
+            borderColor: '#bdbdbd',
+            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+          }
+        } 
+      },
+    }
   ];
 
   return (
     <DynamicTable
-      title="Leads Table"
+      title="Campaign Type"
+      subtitle="CRM / Customer Orders"
       columns={columns}
       data={data}
-      rowsPerPage={5}
+      rowsPerPage={10}
       headerButtons={headerButtons}
-      addButtonLabel="+ Add Leads"
-      addButtonProps={{ color: 'warning', size: 'small', sx: { textTransform: 'none' } }}
       searchPlaceholder="Search for item"
       categoryLabel="All Category"
       statusLabel="All Status"
-      // keep built-in action columns (edit/delete/view)
-      disableEdit={false}
-      disableDelete={false}
-      disableView={false}
+      disableView={true}
+      statusField="status"
+      categoryField="category"
+      statusRenderer={(status) => (
+        status === 'Active' ? <CheckBoxIcon color="primary" /> : <CheckBoxOutlineBlankIcon color="disabled" />
+      )}
+      actionColumnProps={{
+        editButton: {
+          render: (row) => (
+            <IconButton 
+              size="small"
+              onClick={() => console.log('Edit', row.id)}
+              sx={{ color: '#1976d2' }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          ),
+        },
+        deleteButton: {
+          render: (row) => (
+            <IconButton 
+              size="small"
+              onClick={() => console.log('Delete', row.id)}
+              sx={{ color: '#d32f2f' }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          ),
+        },
+      }}
+      sx={{
+        '& .MuiTableCell-root': {
+          padding: '12px 16px',
+          borderBottom: '1px solid rgba(224, 224, 224, 1)'
+        },
+        '& .MuiTableHead-root': {
+          backgroundColor: '#f5f5f5',
+          '& .MuiTableCell-head': {
+            fontWeight: 600,
+            color: 'rgba(0, 0, 0, 0.87)'
+          }
+        },
+      }}
+      headerProps={{
+        sx: {
+          '& .MuiTypography-h5': {
+            fontSize: '1.25rem',
+            fontWeight: 500
+          },
+          marginBottom: '16px'
+        }
+      }}
+      filterProps={{
+        category: {
+          sx: {
+            minWidth: 120,
+            marginRight: '8px'
+          }
+        },
+        status: {
+          sx: {
+            minWidth: 120,
+            marginRight: '8px'
+          }
+        }
+      }}
     />
   );
 };

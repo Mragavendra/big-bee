@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DesignationEdit = () => {
-  const [isActive, setIsActive] = useState(true);
-  
-  // Dummy data for designation
+  const navigate = useNavigate();
+
   const [designationData, setDesignationData] = useState({
     name: 'Senior Software Engineer',
     level: 'L3',
-    description: 'Responsible for developing complex software solutions and mentoring junior team members.'
+    description: 'Responsible for developing complex software solutions and mentoring junior team members.',
+    isActive: true
   });
 
   const designationLevels = ['L1', 'L2', 'L3', 'L4', 'L5'];
@@ -20,15 +21,30 @@ const DesignationEdit = () => {
     }));
   };
 
+  const toggleActiveStatus = () => {
+    setDesignationData(prev => ({
+      ...prev,
+      isActive: !prev.isActive
+    }));
+  };
+
   return (
-    <div className=" p-6">
-      <div className=" mx-auto">
+    <div className="p-6">
+      <div className="mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-gray-900">Edit Designation</h1>
-          <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
-            Save
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/settings/designation')}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-md font-medium"
+            >
+              Cancel
+            </button>
+            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+              Save
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -85,11 +101,11 @@ const DesignationEdit = () => {
             <div className="flex items-center">
               <label className="text-sm font-medium text-gray-700 mr-4">Active Status*</label>
               <div 
-                className={`relative inline-flex h-7 w-14 items-center rounded-full cursor-pointer transition-colors ${isActive ? 'bg-orange-500' : 'bg-gray-200'}`}
-                onClick={() => setIsActive(!isActive)}
+                className={`relative inline-flex h-7 w-14 items-center rounded-full cursor-pointer transition-colors ${designationData.isActive ? 'bg-orange-500' : 'bg-gray-200'}`}
+                onClick={toggleActiveStatus}
               >
-                <div className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-7' : 'translate-x-1'} shadow-sm`}>
-                  {isActive && (
+                <div className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${designationData.isActive ? 'translate-x-7' : 'translate-x-1'} shadow-sm`}>
+                  {designationData.isActive && (
                     <div className="flex items-center justify-center h-full">
                       <svg className="h-3 w-3 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />

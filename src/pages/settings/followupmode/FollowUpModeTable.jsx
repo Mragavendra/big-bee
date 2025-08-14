@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -10,94 +9,83 @@ const FollowUpModeTable = () => {
   const location = useLocation();
 
   const columns = [
-    { id: 'enquiryNo', label: 'Enquiry No' },
-    { id: 'leadDate', label: 'Lead Date' },
-    { id: 'leadType', label: 'Lead Type' },
-    { id: 'leadSource', label: 'Lead Source' },
-    { id: 'prospect', label: 'Prospect' },
-    { id: 'mobileNumber', label: 'Mobile Number' },
-    { id: 'assignedBde', label: 'Assigned BDE' },
-    { id: 'assignedCs', label: 'Assigned CS' },
+    { id: 'sNo', label: 'S1 No' },
+    { id: 'mode', label: 'Mode' },
+    { id: 'description', label: 'Description' },
+    { id: 'status', label: 'Status' }, // Added status column
   ];
 
-  // example sample rows so UI looks like your screenshot
   const data = [
     {
-      id: '1',
-      enquiryNo: 'L_001',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'ABC Pvt. Ltd.',
-      mobileNumber: '9123456789',
-      assignedBde: 'Anand Kumar',
-      assignedCs: 'Priya Menon',
-      status: 'Active',
-      category: 'General',
+      id: 'Q1',
+      sNo: 'Q1',
+      mode: 'First Call',
+      description: 'Inbound examples includes WATI (WhatsApp API), Google Ads, Instagram DMs, Referral, Website Enquiry',
+      status: 'Active', // Added status
+      category: 'Inbound'
     },
     {
-      id: '2',
-      enquiryNo: 'L_002',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Mahindra Logistics',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      id: 'Q2',
+      sNo: 'Q2',
+      mode: 'Meeting Scheduled',
+      description: 'Outbound Example includes Cold Call, LinkedIn Outreach, Walk-in Visit, Database Follow-up, Email Campaign',
+      status: 'Active', // Added status
+      category: 'Outbound'
     },
-    {
-      id: '3',
-      enquiryNo: 'L_003',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Prestige Group',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
-    },
+    // ... other items with status
   ];
 
   const headerButtons = [
     {
-      label: '+ Assign',
-      variant: 'outlined',
-      size: 'small',
-      startIcon: <AssignmentIndIcon />,
-      onClick: () => navigate(`${location.pathname}/assign`),
-      props: { sx: { textTransform: 'none' } },
-    },
-    {
-      label: '+ Import Leads',
+      label: 'Import Leads',
       variant: 'outlined',
       size: 'small',
       startIcon: <UploadFileIcon />,
       onClick: () => navigate(`${location.pathname}/import`),
-      props: { sx: { textTransform: 'none' } },
-    },
+      props: { 
+        sx: { 
+          textTransform: 'none',
+          borderColor: '#050505ff',
+          color: '#000000ff',
+          '&:hover': {
+            backgroundColor: 'rgba(59, 130, 246, 0.04)',
+            borderColor: '#3b82f6'
+          }
+        } 
+      },
+    }
   ];
 
   return (
     <DynamicTable
-      title="Leads Table"
+      title="FollowUp Mode"
+      subtitle="CRM / Customer Orders"
       columns={columns}
       data={data}
       rowsPerPage={5}
       headerButtons={headerButtons}
-      addButtonLabel="+ Add Leads"
-      addButtonProps={{ color: 'warning', size: 'small', sx: { textTransform: 'none' } }}
-      searchPlaceholder="Search for item"
+      addButtonLabel="Add FollowUp Mode"
+      addButtonProps={{ 
+        variant: 'contained',
+        color: 'primary',
+        size: 'small', 
+        startIcon: <AddIcon />,
+        sx: { 
+          textTransform: 'none',
+          backgroundColor: '#F76829',
+          '&:hover': {
+            backgroundColor: '#2563eb'
+          }
+        } 
+      }}
+      searchPlaceholder="Search for Item"
       categoryLabel="All Category"
-      statusLabel="All Status"
-      // keep built-in action columns (edit/delete/view)
+      categoryField="category"
+      statusLabel="All Status" // Added status filter
+      statusField="status" // Points to status field
       disableEdit={false}
       disableDelete={false}
-      disableView={false}
+      disableView={true}
     />
   );
 };

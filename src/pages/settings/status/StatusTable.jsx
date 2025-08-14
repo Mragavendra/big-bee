@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -10,70 +9,40 @@ const StatusTable = () => {
   const location = useLocation();
 
   const columns = [
-    { id: 'enquiryNo', label: 'Enquiry No' },
-    { id: 'leadDate', label: 'Lead Date' },
-    { id: 'leadType', label: 'Lead Type' },
-    { id: 'leadSource', label: 'Lead Source' },
-    { id: 'prospect', label: 'Prospect' },
-    { id: 'mobileNumber', label: 'Mobile Number' },
-    { id: 'assignedBde', label: 'Assigned BDE' },
-    { id: 'assignedCs', label: 'Assigned CS' },
+    { id: 'siNo', label: 'SINo' },
+    { id: 'services', label: 'Services' },
+    { id: 'description', label: 'Description' },
+    { id: 'status', label: 'Status' },
   ];
 
-  // example sample rows so UI looks like your screenshot
+  // Updated sample data with descriptions
   const data = [
     {
       id: '1',
-      enquiryNo: 'L_001',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'ABC Pvt. Ltd.',
-      mobileNumber: '9123456789',
-      assignedBde: 'Anand Kumar',
-      assignedCs: 'Priya Menon',
-      status: 'Active',
-      category: 'General',
+      siNo: '01',
+      services: 'Hot',
+      description: 'Urgent requirement, needs immediate follow-up',
+      status: '☺',
     },
     {
       id: '2',
-      enquiryNo: 'L_002',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Mahindra Logistics',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      siNo: '02',
+      services: 'Warm',
+      description: 'Interested but needs more information',
+      status: '☺',
     },
     {
       id: '3',
-      enquiryNo: 'L_003',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Prestige Group',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      siNo: '03',
+      services: 'Cold',
+      description: 'Not currently interested, follow up in future',
+      status: '☺',
     },
   ];
 
   const headerButtons = [
     {
-      label: '+ Assign',
-      variant: 'outlined',
-      size: 'small',
-      startIcon: <AssignmentIndIcon />,
-      onClick: () => navigate(`${location.pathname}/assign`),
-      props: { sx: { textTransform: 'none' } },
-    },
-    {
-      label: '+ Import Leads',
+      label: 'Import Leads',
       variant: 'outlined',
       size: 'small',
       startIcon: <UploadFileIcon />,
@@ -84,14 +53,19 @@ const StatusTable = () => {
 
   return (
     <DynamicTable
-      title="Leads Table"
+      title="CRM / Customer Orders"
       columns={columns}
       data={data}
       rowsPerPage={5}
       headerButtons={headerButtons}
-      addButtonLabel="+ Add Leads"
-      addButtonProps={{ color: 'warning', size: 'small', sx: { textTransform: 'none' } }}
-      searchPlaceholder="Search for item"
+      addButtonLabel="+ Add FollowUp mode"
+      addButtonProps={{ 
+        color: 'warning', 
+        size: 'small', 
+        sx: { textTransform: 'none' },
+        startIcon: <AddIcon /> 
+      }}
+      searchPlaceholder="Search for Item"
       categoryLabel="All Category"
       statusLabel="All Status"
       // keep built-in action columns (edit/delete/view)

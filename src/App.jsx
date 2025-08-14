@@ -39,6 +39,29 @@ import DesignationAdd from './pages/settings/designation/DesignationAdd';
 import DesignationEdit from './pages/settings/designation/DesignationEdit';
 import DepartmentAdd from './pages/settings/department/DepartmentAdd';
 import DepartmentEdit from './pages/settings/department/DepartmentEdit';
+import LeadTypeAdd from './pages/settings/leadtype/LeadTypeAdd';
+import LeadTypeEdit from './pages/settings/leadtype/LeadTypeEdit';
+import LeadSourceAdd from './pages/settings/leadsource/LeadSourceAdd';
+import LeadSourceEdit from './pages/settings/leadsource/LeadSourceEdit';
+import CategoryAdd from './pages/settings/category/CategoryAdd';
+import CategoryEdit from './pages/settings/category/CategoryEdit';
+import ActionAdd from './pages/settings/action/ActionAdd';
+import ActionEdit from './pages/settings/action/ActionEdit';
+import StatusAdd from './pages/settings/status/StatusAdd';
+import StatusEdit from './pages/settings/status/StatusEdit';
+import FollowUpModeAdd from './pages/settings/followupmode/FollowUpModeAdd';
+import FollowUpModeEdit from './pages/settings/followupmode/FollowUpModeEdit';
+import CompanyAdd from './pages/settings/company/CompanyAdd';
+import CompanyEdit from './pages/settings/company/CompanyEdit';
+import ServicesAdd from './pages/settings/services/ServicesAdd';
+import ServicesEdit from './pages/settings/services/ServicesEdit';
+import CampaignTypeAdd from './pages/settings/campaigntype/CampaignTypeAdd';
+import CampaignTypeEdit from './pages/settings/campaigntype/CampaignTypeEdit';
+import TypeOfAdvertisingAdd from './pages/settings/typeofadvertising/TypeOfAdvertisingAdd';
+import TypeOfAdvertisingEdit from './pages/settings/typeofadvertising/TypeOfAdvertisingEdit';
+import MarketingChannelAdd from './pages/settings/marketingchannel/MarketingChannelAdd';
+import MarketingChannelEdit from './pages/settings/marketingchannel/MarketingChannelEdit';
+import UserProfileForm from './pages/profile/UserProfileForm';
 function App() {
   return (
     <Layout>
@@ -59,6 +82,7 @@ function App() {
         <Route path="/meeting" element={<Meeting />} />
         <Route path="/profitability-analysis" element={<ProfitabilityAnalysis />} />
         <Route path="/financial-mis" element={<FinancialMis/>} />
+        <Route path="/profile" element={<UserProfileForm/>} />
 
 
 
@@ -79,16 +103,63 @@ function App() {
         <Route path="/settings/department/edit/:id" element={<DepartmentEdit/>} />
 
         <Route path="/settings/lead-type" element={<LeadTypeTable/>} />
+        <Route path="/settings/lead-type/add" element={<LeadTypeAdd/>} />
+        <Route path="/settings/lead-type/edit/:id" element={<LeadTypeEdit/>}/>
+
+
         <Route path="/settings/lead-source" element={<LeadSourceTable/>} />
+        <Route path="/settings/lead-source/add" element={<LeadSourceAdd/>} />
+        <Route path="/settings/lead-source/edit/:id" element={<LeadSourceEdit/>} />
+
+
         <Route path="/settings/category" element={<CategoryTable/>}/>
+        <Route path="/settings/category/add" element={<CategoryAdd/>}/>
+        <Route path="/settings/category/edit/:id" element={<CategoryEdit/>}/>
+
+
         <Route path="/settings/action" element={<ActionTable/>} />
+        <Route path="/settings/action/add" element={<ActionAdd/>} />
+        <Route path="/settings/action/edit/:id" element={<ActionEdit/>} />
+
+
+
         <Route path="/settings/status" element={<StatusTable/>} />
+        <Route path="/settings/status/add" element={<StatusAdd/>} />
+        <Route path="/settings/status/edit/:id" element={<StatusEdit/>} />
+
+
+
         <Route path="/settings/follow-up-mode" element={<FollowUpModeTable/>} />
+        <Route path="/settings/follow-up-mode/add" element={<FollowUpModeAdd/>} />
+        <Route path="/settings/follow-up-mode/edit/:id" element={<FollowUpModeEdit/>} />
+
+
+
         <Route path="/settings/company" element={<CompanyTable/>} />
+        <Route path="/settings/company/add" element={<CompanyAdd/>} />
+        <Route path="/settings/company/edit/:id" element={<CompanyEdit/>} />
+
+
         <Route path="/settings/services" element={<ServicesTable/>} />
+        <Route path="/settings/services/add" element={<ServicesAdd/>} />
+        <Route path="/settings/services/edit/:id" element={<ServicesEdit/>} />
+
+
+
+
         <Route path="/settings/campaign-type" element={<CampaignTypeTable/>} />
+        <Route path="/settings/campaign-type/add" element={<CampaignTypeAdd/>} />
+        <Route path="/settings/campaign-type/edit/:id" element={<CampaignTypeEdit/>} />
+
+
         <Route path="/settings/type-of-advertising" element={<TypeOfAdvertisingTable/>} />
+        <Route path="/settings/type-of-advertising/add" element={<TypeOfAdvertisingAdd/>} />
+        <Route path="/settings/type-of-advertising/edit/:id" element={<TypeOfAdvertisingEdit/>} />
+
+
         <Route path="/settings/marketing-channel" element={<MarketingChannelTable/>} />
+        <Route path="/settings/marketing-channel/add" element={<MarketingChannelAdd/>} />
+        <Route path="/settings/marketing-channel/edit/:id" element={<MarketingChannelEdit/>} />
       </Routes>
     </Layout>
   );

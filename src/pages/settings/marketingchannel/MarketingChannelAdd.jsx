@@ -1,19 +1,41 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const DepartmentAdd = () => {
+const MarketingChannelAdd = () => {
   const [isActive, setIsActive] = useState(true);
+  const [channelData, setChannelData] = useState({
+    channel: '',
+    advertisingType: '',
+    description: ''
+  });
   const navigate = useNavigate();
+
+  // Sample advertising types for the dropdown
+  const advertisingTypes = [
+    'Social Media',
+    'Email Marketing',
+    'Content Marketing',
+    'PPC Advertising',
+    'Influencer Marketing'
+  ];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setChannelData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   return (
     <div className="p-6">
       <div className="mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Add Department</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Add Marketing Channel</h1>
           <div className="flex space-x-4">
             <button 
-              onClick={() => navigate('/settings/department')}
+              onClick={() => navigate('/settings/marketing-channel')}
               className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-md font-medium"
             >
               Cancel
@@ -25,26 +47,47 @@ const DepartmentAdd = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Department Details */}
+          {/* Left Column - Marketing Channel Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Department Details</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-6">Marketing Channel</h2>
             
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Department Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Marketing Channel</label>
                 <input 
                   type="text" 
-                  placeholder="Enter Department Name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-400 placeholder-gray-400"
+                  name="channel"
+                  value={channelData.channel}
+                  onChange={handleInputChange}
+                  placeholder="Enter Marketing Channel"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
                 />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Type of Advertising</label>
+                <select
+                  name="advertisingType"
+                  value={channelData.advertisingType}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
+                >
+                  <option value="">Select Advertising Type</option>
+                  {advertisingTypes.map((type, index) => (
+                    <option key={index} value={type}>{type}</option>
+                  ))}
+                </select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea 
+                  name="description"
+                  value={channelData.description}
+                  onChange={handleInputChange}
                   placeholder="Enter Description"
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-400 placeholder-gray-400 resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400 resize-none"
                 />
               </div>
             </div>
@@ -78,4 +121,4 @@ const DepartmentAdd = () => {
   );
 };
 
-export default DepartmentAdd;
+export default MarketingChannelAdd;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const EditLeadsFormLayout = () => {
   const { id } = useParams(); // Get ID from route params
+  const navigate = useNavigate(); // Navigation hook
 
   // Form state with dummy initial data (use 'id' if you want)
   const [formData, setFormData] = useState({
@@ -59,12 +60,29 @@ const EditLeadsFormLayout = () => {
     // Add your API PUT/PATCH call here to update lead
   };
 
+  const handleCancel = () => {
+    navigate("/lead-capture");
+  };
+
   return (
     <div className="min-h-screen p-6 ">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-medium text-gray-800">Edit Lead </h1>
-        <button onClick={handleSubmit} className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"> Update </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={handleCancel} 
+            className="bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 px-6 py-2 rounded-md font-medium"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={handleSubmit} 
+            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+          >
+            Update
+          </button>
+        </div>
       </div>
 
       {/* Form Content */}

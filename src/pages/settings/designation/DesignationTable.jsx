@@ -1,103 +1,121 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 const DesignationTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const columns = [
-    { id: 'enquiryNo', label: 'Enquiry No' },
-    { id: 'leadDate', label: 'Lead Date' },
-    { id: 'leadType', label: 'Lead Type' },
-    { id: 'leadSource', label: 'Lead Source' },
-    { id: 'prospect', label: 'Prospect' },
-    { id: 'mobileNumber', label: 'Mobile Number' },
-    { id: 'assignedBde', label: 'Assigned BDE' },
-    { id: 'assignedCs', label: 'Assigned CS' },
+    { id: 'slNo', label: 'Sl No', width: 80 },
+    { id: 'designation', label: 'Designation', width: 200 },
+    { id: 'level', label: 'Level', width: 80 },
+    { id: 'description', label: 'Description', width: 300 },
   ];
 
-  // example sample rows so UI looks like your screenshot
   const data = [
     {
       id: '1',
-      enquiryNo: 'L_001',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'ABC Pvt. Ltd.',
-      mobileNumber: '9123456789',
-      assignedBde: 'Anand Kumar',
-      assignedCs: 'Priya Menon',
+      slNo: '01',
+      designation: 'Department Head',
+      level: '1',
+      description: 'Top-level lead of a department',
       status: 'Active',
-      category: 'General',
+      category: 'Management',
     },
     {
       id: '2',
-      enquiryNo: 'L_002',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Mahindra Logistics',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      slNo: '02',
+      designation: 'Manager',
+      level: '2',
+      description: 'Oversees a team, reports to Dept. Head',
+      status: 'Active',
+      category: 'Management',
     },
     {
       id: '3',
-      enquiryNo: 'L_003',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Prestige Group',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      slNo: '03',
+      designation: 'Executive',
+      level: '3',
+      description: 'Operational staff, reports to Manager',
+      status: 'Active',
+      category: 'Operations',
+    },
+    {
+      id: '4',
+      slNo: '04',
+      designation: 'Co ordinator',
+      level: '3',
+      description: 'Supports execution and team coordination tasks',
+      status: 'Active',
+      category: 'Operations',
     },
   ];
 
   const headerButtons = [
     {
-      label: '+ Assign',
-      variant: 'outlined',
-      size: 'small',
-      startIcon: <AssignmentIndIcon />,
-      onClick: () => navigate(`${location.pathname}/assign`),
-      props: { sx: { textTransform: 'none' } },
-    },
-    {
-      label: '+ Import Leads',
+      label: 'Import',
       variant: 'outlined',
       size: 'small',
       startIcon: <UploadFileIcon />,
       onClick: () => navigate(`${location.pathname}/import`),
-      props: { sx: { textTransform: 'none' } },
+      props: { 
+        sx: { 
+          textTransform: 'none',
+          borderColor: '#9e9e9e',
+          color: '#000000',
+        } 
+      },
     },
   ];
 
+  const categoryOptions = [
+    { value: '', label: 'All Category' },
+    { value: 'Management', label: 'Management' },
+    { value: 'Operations', label: 'Operations' },
+  ];
+
+  const renderStatus = () => (
+    <ChatBubbleOutlineIcon 
+      sx={{ 
+        color: '#9e9e9e',
+        verticalAlign: 'middle' 
+      }} 
+    />
+  );
+
   return (
     <DynamicTable
-      title="Leads Table"
+      title="Designation"
+      subtitle="CRM / Customer Orders"
       columns={columns}
       data={data}
-      rowsPerPage={5}
+      rowsPerPage={10}
       headerButtons={headerButtons}
-      addButtonLabel="+ Add Leads"
-      addButtonProps={{ color: 'warning', size: 'small', sx: { textTransform: 'none' } }}
-      searchPlaceholder="Search for item"
-      categoryLabel="All Category"
+      addButtonLabel="Add Designation"
+      addButtonProps={{ 
+        variant: 'outlined',
+        size: 'small', 
+        sx: { 
+          textTransform: 'none',
+          color: '#ffffffff',
+          backgroundColor: '#ff8800ff',
+        } 
+      }}
+      searchPlaceholder="Search designation"
       statusLabel="All Status"
-      // keep built-in action columns (edit/delete/view)
+      categoryLabel="All Category"
+      categoryField="category"
+      categoryOptions={categoryOptions}
       disableEdit={false}
       disableDelete={false}
-      disableView={false}
+      disableView={true}
+      statusField="status"
+      statusRender={renderStatus}
+      showLegend={false}
     />
   );
 };

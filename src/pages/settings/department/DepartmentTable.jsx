@@ -1,79 +1,69 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import AddIcon from '@mui/icons-material/Add';
 
 const DepartmentTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const columns = [
-    { id: 'enquiryNo', label: 'Enquiry No' },
-    { id: 'leadDate', label: 'Lead Date' },
-    { id: 'leadType', label: 'Lead Type' },
-    { id: 'leadSource', label: 'Lead Source' },
-    { id: 'prospect', label: 'Prospect' },
-    { id: 'mobileNumber', label: 'Mobile Number' },
-    { id: 'assignedBde', label: 'Assigned BDE' },
-    { id: 'assignedCs', label: 'Assigned CS' },
+    { id: 'sNo', label: 'Sl No' },
+    { id: 'department', label: 'Department' },
+    { id: 'description', label: 'Description' },
   ];
 
-  // example sample rows so UI looks like your screenshot
   const data = [
     {
       id: '1',
-      enquiryNo: 'L_001',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'ABC Pvt. Ltd.',
-      mobileNumber: '9123456789',
-      assignedBde: 'Anand Kumar',
-      assignedCs: 'Priya Menon',
+      sNo: '01',
+      department: 'Marketing',
+      description:
+        'Responsible for generating new leads through channels like WhatsApp (WATI), Google Ads, and referrals.',
+      category: 'Sales',
       status: 'Active',
-      category: 'General',
     },
     {
       id: '2',
-      enquiryNo: 'L_002',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Mahindra Logistics',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      sNo: '02',
+      department: 'Creative Department',
+      description:
+        'Handles assigning captured leads to the appropriate Business Development Executives for follow-up.',
+      category: 'Creative',
+      status: 'Active',
     },
     {
       id: '3',
-      enquiryNo: 'L_003',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Prestige Group',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      sNo: '03',
+      department: 'Operation & Production',
+      description:
+        'Oversees end-to-end client projects, coordinating between departments and ensuring timely execution.',
+      category: 'Operations',
+      status: 'Active',
+    },
+    {
+      id: '4',
+      sNo: '04',
+      department: 'Lead Distribution',
+      description:
+        'Develops event creatives, design assets, and visual concepts as per client briefs and brand guidelines.',
+      category: 'Creative',
+      status: 'Active',
+    },
+    {
+      id: '5',
+      sNo: '05',
+      department: 'Project Management',
+      description:
+        'Manages on-ground event setup, vendor coordination, logistics, and technical execution.',
+      category: 'Operations',
+      status: 'Active',
     },
   ];
 
   const headerButtons = [
     {
-      label: '+ Assign',
-      variant: 'outlined',
-      size: 'small',
-      startIcon: <AssignmentIndIcon />,
-      onClick: () => navigate(`${location.pathname}/assign`),
-      props: { sx: { textTransform: 'none' } },
-    },
-    {
-      label: '+ Import Leads',
+      label: 'Import Leads',
       variant: 'outlined',
       size: 'small',
       startIcon: <UploadFileIcon />,
@@ -82,19 +72,32 @@ const DepartmentTable = () => {
     },
   ];
 
+  const categoryOptions = [
+    { value: '', label: 'All Category' },
+    { value: 'Sales', label: 'Sales' },
+    { value: 'Creative', label: 'Creative' },
+    { value: 'Operations', label: 'Operations' },
+  ];
+
   return (
     <DynamicTable
-      title="Leads Table"
+      title="Department"
+      subtitle="CRM / Customer Orders"
       columns={columns}
       data={data}
       rowsPerPage={5}
       headerButtons={headerButtons}
-      addButtonLabel="+ Add Leads"
-      addButtonProps={{ color: 'warning', size: 'small', sx: { textTransform: 'none' } }}
+      addButtonLabel="Add Department"
+      addButtonProps={{
+        color: 'warning',
+        size: 'small',
+        sx: { textTransform: 'none' },
+      }}
       searchPlaceholder="Search for item"
-      categoryLabel="All Category"
       statusLabel="All Status"
-      // keep built-in action columns (edit/delete/view)
+      categoryLabel="All Category"
+      categoryField="category"
+      categoryOptions={categoryOptions}
       disableEdit={false}
       disableDelete={false}
       disableView={false}

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AddFunnelTracker = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     // Basic Lead Details
     enquiryNo: 'LED044',
@@ -68,17 +70,29 @@ const AddFunnelTracker = () => {
     // Handle save logic here
   };
 
+  const handleCancel = () => {
+    navigate("/funnel-review");
+  };
+
   return (
     <div className=" mx-auto p-6 ">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Add Funnel tracker</h1>
-        <button 
-          onClick={handleSave}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
-        >
-          Save
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={handleCancel}
+            className="bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 px-6 py-2 rounded-md font-medium"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={handleSave}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+          >
+            Save
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

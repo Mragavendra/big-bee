@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DesignationAdd = () => {
   const [isActive, setIsActive] = useState(true);
+  const navigate = useNavigate();
 
   return (
     <div className=" p-6">
@@ -9,9 +11,17 @@ const DesignationAdd = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-gray-900">Add Designation</h1>
-          <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
-            Save
-          </button>
+          <div className="flex space-x-4">
+            <button 
+              onClick={() => navigate('/settings/designation')}
+              className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-md font-medium"
+            >
+              Cancel
+            </button>
+            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+              Save
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

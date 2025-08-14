@@ -1,103 +1,162 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import AddIcon from '@mui/icons-material/Add';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const TypeOfAdvertisingTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const columns = [
-    { id: 'enquiryNo', label: 'Enquiry No' },
-    { id: 'leadDate', label: 'Lead Date' },
-    { id: 'leadType', label: 'Lead Type' },
-    { id: 'leadSource', label: 'Lead Source' },
-    { id: 'prospect', label: 'Prospect' },
-    { id: 'mobileNumber', label: 'Mobile Number' },
-    { id: 'assignedBde', label: 'Assigned BDE' },
-    { id: 'assignedCs', label: 'Assigned CS' },
+    { id: 'questionNo', label: 'Question' },
+    { id: 'advertisingType', label: 'Type of Advertising' },
+    { id: 'description', label: 'Description' },
   ];
 
-  // example sample rows so UI looks like your screenshot
   const data = [
     {
       id: '1',
-      enquiryNo: 'L_001',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'ABC Pvt. Ltd.',
-      mobileNumber: '9123456789',
-      assignedBde: 'Anand Kumar',
-      assignedCs: 'Priya Menon',
+      questionNo: 'Q1',
+      advertisingType: 'Aided Advertising',
+      description: 'Advertising with external support and paid placements',
       status: 'Active',
-      category: 'General',
+      category: 'Digital'
     },
     {
       id: '2',
-      enquiryNo: 'L_002',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Mahindra Logistics',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      questionNo: 'Q2',
+      advertisingType: 'Organic Marketing',
+      description: 'Non-paid marketing efforts and word-of-mouth',
+      status: 'Active',
+      category: 'Digital'
     },
     {
       id: '3',
-      enquiryNo: 'L_003',
-      leadDate: '12/08/2025',
-      leadType: 'Inbound',
-      leadSource: 'Google Ads',
-      prospect: 'Prestige Group',
-      mobileNumber: '9123456789',
-      assignedBde: '-',
-      assignedCs: '-',
-      status: 'Inactive',
-      category: 'General',
+      questionNo: 'Q3',
+      advertisingType: 'Email & Messaging',
+      description: 'Direct communication through email and messaging platforms',
+      status: 'Active',
+      category: 'Digital'
+    },
+    {
+      id: '4',
+      questionNo: 'Q4',
+      advertisingType: 'Influencer & Affiliate Marketing',
+      description: 'Leveraging influencers and affiliate networks',
+      status: 'Active',
+      category: 'Social'
+    },
+    {
+      id: '5',
+      questionNo: 'Q5',
+      advertisingType: 'Offline Marketing',
+      description: 'Traditional marketing channels (print, TV, radio, etc.)',
+      status: 'Active',
+      category: 'Traditional'
     },
   ];
 
   const headerButtons = [
     {
-      label: '+ Assign',
-      variant: 'outlined',
-      size: 'small',
-      startIcon: <AssignmentIndIcon />,
-      onClick: () => navigate(`${location.pathname}/assign`),
-      props: { sx: { textTransform: 'none' } },
-    },
-    {
-      label: '+ Import Leads',
+      label: 'Import Leads',
       variant: 'outlined',
       size: 'small',
       startIcon: <UploadFileIcon />,
       onClick: () => navigate(`${location.pathname}/import`),
-      props: { sx: { textTransform: 'none' } },
-    },
+      props: { 
+        sx: { 
+          textTransform: 'none',
+          borderColor: '#e0e0e0',
+          color: 'text.primary',
+          '&:hover': {
+            borderColor: '#bdbdbd',
+            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+          }
+        } 
+      },
+    }
   ];
 
   return (
     <DynamicTable
-      title="Leads Table"
+      title="Type of Advertising"
       columns={columns}
       data={data}
-      rowsPerPage={5}
+      rowsPerPage={10}
       headerButtons={headerButtons}
-      addButtonLabel="+ Add Leads"
-      addButtonProps={{ color: 'warning', size: 'small', sx: { textTransform: 'none' } }}
-      searchPlaceholder="Search for item"
+      searchPlaceholder="Search for Item"
       categoryLabel="All Category"
       statusLabel="All Status"
-      // keep built-in action columns (edit/delete/view)
-      disableEdit={false}
-      disableDelete={false}
-      disableView={false}
+      disableView={true}
+      statusField="status"
+      categoryField="category"
+      statusRenderer={(status) => (
+        status === 'Active' ? <CheckBoxIcon color="primary" /> : <CheckBoxOutlineBlankIcon color="disabled" />
+      )}
+      actionColumnProps={{
+        editButton: {
+          render: (row) => (
+            <IconButton 
+              size="small"
+              onClick={() => console.log('Edit', row.id)}
+              sx={{ color: '#1976d2' }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          ),
+        },
+        deleteButton: {
+          render: (row) => (
+            <IconButton 
+              size="small"
+              onClick={() => console.log('Delete', row.id)}
+              sx={{ color: '#d32f2f' }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          ),
+        },
+      }}
+      sx={{
+        '& .MuiTableCell-root': {
+          padding: '12px 16px',
+          borderBottom: '1px solid rgba(224, 224, 224, 1)'
+        },
+        '& .MuiTableHead-root': {
+          backgroundColor: '#f5f5f5',
+          '& .MuiTableCell-head': {
+            fontWeight: 600,
+            color: 'rgba(0, 0, 0, 0.87)'
+          }
+        },
+      }}
+      headerProps={{
+        sx: {
+          '& .MuiTypography-h5': {
+            fontSize: '1.25rem',
+            fontWeight: 500
+          },
+          marginBottom: '16px'
+        }
+      }}
+      filterProps={{
+        category: {
+          sx: {
+            minWidth: 120,
+            marginRight: '8px'
+          }
+        },
+        status: {
+          sx: {
+            minWidth: 120,
+            marginRight: '8px'
+          }
+        }
+      }}
     />
   );
 };

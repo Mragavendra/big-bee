@@ -1,21 +1,7 @@
 import React, { useState, ReactNode } from 'react';
-import {
-  AppBar,
-  Box,
-  CssBaseline,
-  Drawer,
-  IconButton,
-  InputBase,
-  Toolbar,
-  Typography,
-  Avatar,
-  Badge,
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Search as SearchIcon,
-  Notifications as NotificationsIcon,
-} from '@mui/icons-material';
+import {AppBar,Box,CssBaseline,Drawer,IconButton,InputBase,Toolbar,Typography,Avatar,Badge,} from '@mui/material';
+import { useNavigate } from "react-router-dom";
+import { Menu as MenuIcon, Search as SearchIcon,Notifications as NotificationsIcon,} from '@mui/icons-material';
 import { styled, alpha } from '@mui/material/styles';
 import Sidebar from '../components/Sidebar';
 
@@ -66,6 +52,8 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+    const navigate = useNavigate();
+
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -134,14 +122,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 fontSize: '0.875rem',
               }}
             >
-              ED
+              RG
             </Avatar>
-            <Typography
-              variant="body2"
-              sx={{ ml: 1, fontWeight: 500, display: { xs: 'none', sm: 'block' } }}
-            >
-              Eureka Design
-            </Typography>
+           <Typography
+      variant="body2"
+      sx={{
+        ml: 1,
+        fontWeight: 500,
+        display: { xs: "none", sm: "block" },
+        cursor: "pointer"
+      }}
+      onClick={  () => navigate("/profile")
+      }
+    >
+      Raghavv 😎
+    </Typography>
           </Box>
         </Toolbar>
       </AppBar>

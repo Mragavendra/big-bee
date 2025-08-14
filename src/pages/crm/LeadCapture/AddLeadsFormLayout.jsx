@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AddLeadsFormLayout = () => {
+  const navigate = useNavigate(); // Navigation hook
   const [formData, setFormData] = useState({
     enquiryNo: "LED044",
     leadDate: "20-06-2025",
@@ -29,17 +31,30 @@ const AddLeadsFormLayout = () => {
   const handleSubmit = () => {
     console.log(formData);
   };
+
+  const handleCancel = () => {
+    navigate("/lead-capture");
+  };
+
   return (
     <div className=" min-h-screen p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-medium text-gray-800">crm/leadcapture/add lead</h1>
-        <button
-          onClick={handleSubmit}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
-        >
-          Save
-        </button>
+        <div className="flex gap-3">
+          <button 
+            onClick={handleCancel} 
+            className="bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 px-6 py-2 rounded-md font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+          >
+            Save
+          </button>
+        </div>
       </div>
       {/* Form Content */}
       <div className="space-y-6">

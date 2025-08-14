@@ -13,7 +13,6 @@ import {
   NotificationsNone as NotificationIcon,
   Settings as SettingsIcon,
   ExitToApp as ExitToAppIcon,
-  Notifications as NotificationsIcon,
   ArrowBack as ArrowBackIcon,
   Person as PersonIcon,
   Work as WorkIcon,
@@ -24,15 +23,13 @@ import {
   PlayArrow as ActionIcon,
   CheckCircle as StatusIcon,
   Forum as FollowUpIcon,
-  Business as CompanyIcon,
   RoomService as ServicesIcon,
   Campaign as CampaignIcon,
-  Campaign as AdsIcon,   // Replacing Advertising with Campaign
-  Public as MarketingIcon // Replacing Marketing with Public
+  Public as MarketingIcon
 } from "@mui/icons-material";
 import bigBeeLogo from "../assets/big-beelogo.svg";
 
-// --- Main menu sections ---
+// Main menu sections
 const menuSections = [
   {
     title: "Main menu",
@@ -63,7 +60,7 @@ const menuSections = [
   },
 ];
 
-// --- Settings menu ---
+// Settings menu
 const settingsMenu = [
   {
     label: "Exit Master",
@@ -72,7 +69,7 @@ const settingsMenu = [
   },
 ];
 
-// --- Masters section ---
+// Masters section
 const mastersItems = [
   { label: "Employee Master", path: "/settings/employee-master", icon: PersonIcon },
   { label: "Designation", path: "/settings/designation", icon: WorkIcon },
@@ -83,10 +80,10 @@ const mastersItems = [
   { label: "Action", path: "/settings/action", icon: ActionIcon },
   { label: "Status", path: "/settings/status", icon: StatusIcon },
   { label: "Follow Up Mode", path: "/settings/follow-up-mode", icon: FollowUpIcon },
-  { label: "Company", path: "/settings/company", icon: CompanyIcon },
+  { label: "Company", path: "/settings/company", icon: BusinessIcon },
   { label: "Services", path: "/settings/services", icon: ServicesIcon },
   { label: "Campaign Type", path: "/settings/campaign-type", icon: CampaignIcon },
-  { label: "Type of Advertising", path: "/settings/type-of-advertising", icon: AdsIcon },
+  { label: "Type of Advertising", path: "/settings/type-of-advertising", icon: CampaignIcon },
   { label: "Marketing Channel", path: "/settings/marketing-channel", icon: MarketingIcon },
 ];
 
@@ -130,7 +127,7 @@ const Sidebar = () => {
       </Box>
 
       {isSettingsPage ? (
-        /* --- Settings menu view --- */
+        // Settings menu view
         <Box>
           {/* Exit Master */}
           <List dense disablePadding>
@@ -140,7 +137,18 @@ const Sidebar = () => {
                 <ListItem key={item.path} disablePadding>
                   <ListItemButton
                     onClick={() => handleNavigation(item.path)}
-                    sx={{ px: 3, py: 1 }}
+                    sx={{
+                      px: 3,
+                      py: 1,
+                      transition: "all 0.25s ease",
+                      "&:hover": {
+                        backgroundColor: "#f9f9f9",
+                        transform: "translateX(4px)",
+                      },
+                      "&:active": {
+                        transform: "scale(0.98)",
+                      },
+                    }}
                   >
                     <ListItemIcon sx={{ color: "#999", minWidth: 36 }}>
                       <IconComponent fontSize="small" />
@@ -186,6 +194,14 @@ const Sidebar = () => {
                       sx={{
                         px: 3,
                         py: 1,
+                        transition: "all 0.25s ease",
+                        "&:hover": {
+                          backgroundColor: "#f9f9f9",
+                          transform: "translateX(4px)",
+                        },
+                        "&:active": {
+                          transform: "scale(0.98)",
+                        },
                         "&.Mui-selected": {
                           backgroundColor: "#f2f2f2",
                           borderLeft: "3px solid #FF6A00",
@@ -205,7 +221,7 @@ const Sidebar = () => {
                         primaryTypographyProps={{
                           fontSize: "0.875rem",
                           fontWeight: isActive ? 500 : 400,
-                          color: isActive ? "#000000ff" : "#333",
+                          color: isActive ? "#000" : "#333",
                         }}
                       />
                     </ListItemButton>
@@ -219,7 +235,21 @@ const Sidebar = () => {
           <Box sx={{ mt: 2, borderTop: "1px solid #F0F0F0", pt: 1 }}>
             <List dense disablePadding>
               <ListItem disablePadding>
-                <ListItemButton onClick={() => navigate("/logout")} sx={{ px: 3, py: 1 }}>
+                <ListItemButton
+                  onClick={() => navigate("/logout")}
+                  sx={{
+                    px: 3,
+                    py: 1,
+                    transition: "all 0.25s ease",
+                    "&:hover": {
+                      backgroundColor: "#f9f9f9",
+                      transform: "translateX(4px)",
+                    },
+                    "&:active": {
+                      transform: "scale(0.98)",
+                    },
+                  }}
+                >
                   <ListItemIcon sx={{ color: "#999", minWidth: 36 }}>
                     <ExitToAppIcon fontSize="small" />
                   </ListItemIcon>
@@ -237,7 +267,7 @@ const Sidebar = () => {
           </Box>
         </Box>
       ) : (
-        /* --- Main menu view --- */
+        // Main menu view
         <>
           {menuSections.map((section) => (
             <Box key={section.title} sx={{ mb: 3 }}>
@@ -265,6 +295,14 @@ const Sidebar = () => {
                         sx={{
                           px: 3,
                           py: 1,
+                          transition: "all 0.25s ease",
+                          "&:hover": {
+                            backgroundColor: "#f9f9f9",
+                            transform: "translateX(4px)",
+                          },
+                          "&:active": {
+                            transform: "scale(0.98)",
+                          },
                           "&.Mui-selected": {
                             backgroundColor: "#f2f2f2",
                             borderLeft: "3px solid #FF6A00",
@@ -284,7 +322,7 @@ const Sidebar = () => {
                           primaryTypographyProps={{
                             fontSize: "0.875rem",
                             fontWeight: isActive ? 500 : 400,
-                            color: isActive ? "#000000ff" : "#333",
+                            color: isActive ? "#000" : "#333",
                           }}
                         />
                       </ListItemButton>
@@ -300,8 +338,18 @@ const Sidebar = () => {
             <List disablePadding>
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={() => handleNavigation("/settings")}
+                  onClick={() => handleNavigation("/settings/employee-master")}
                   selected={location.pathname.startsWith("/settings")}
+                  sx={{
+                    transition: "all 0.25s ease",
+                    "&:hover": {
+                      backgroundColor: "#f9f9f9",
+                      transform: "translateX(4px)",
+                    },
+                    "&:active": {
+                      transform: "scale(0.98)",
+                    },
+                  }}
                 >
                   <ListItemIcon
                     sx={{
@@ -320,8 +368,20 @@ const Sidebar = () => {
                   />
                 </ListItemButton>
               </ListItem>
+
               <ListItem disablePadding>
-                <ListItemButton>
+                <ListItemButton
+                  sx={{
+                    transition: "all 0.25s ease",
+                    "&:hover": {
+                      backgroundColor: "#f9f9f9",
+                      transform: "translateX(4px)",
+                    },
+                    "&:active": {
+                      transform: "scale(0.98)",
+                    },
+                  }}
+                >
                   <ListItemIcon sx={{ color: "#999" }}>
                     <ExitToAppIcon fontSize="small" />
                   </ListItemIcon>

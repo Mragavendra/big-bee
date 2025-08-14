@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const DepartmentAdd = () => {
+const LeadTypeAdd = () => {
   const [isActive, setIsActive] = useState(true);
   const navigate = useNavigate();
 
@@ -10,10 +10,10 @@ const DepartmentAdd = () => {
       <div className="mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Add Department</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Add Lead Type</h1>
           <div className="flex space-x-4">
             <button 
-              onClick={() => navigate('/settings/department')}
+              onClick={() => navigate('/settings/lead-type')}
               className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2 rounded-md font-medium"
             >
               Cancel
@@ -25,16 +25,16 @@ const DepartmentAdd = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Department Details */}
+          {/* Left Column - Lead Type */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Department Details</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-6">Lead Type</h2>
             
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Department Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Lead Type</label>
                 <input 
                   type="text" 
-                  placeholder="Enter Department Name"
+                  placeholder="Enter Lead Type"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-400 placeholder-gray-400"
                 />
               </div>
@@ -78,4 +78,4 @@ const DepartmentAdd = () => {
   );
 };
 
-export default DepartmentAdd;
+export default LeadTypeAdd;

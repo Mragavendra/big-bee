@@ -27,8 +27,8 @@ import {
   Business as CompanyIcon,
   RoomService as ServicesIcon,
   Campaign as CampaignIcon,
-  Campaign as AdsIcon,   // using Campaign icon for Ads
-  Public as MarketingIcon // using Public icon for Marketing
+  Campaign as AdsIcon,   // Replacing Advertising with Campaign
+  Public as MarketingIcon // Replacing Marketing with Public
 } from "@mui/icons-material";
 import bigBeeLogo from "../assets/big-beelogo.svg";
 
@@ -63,7 +63,7 @@ const menuSections = [
   },
 ];
 
-// --- Settings menu only for /settings pages ---
+// --- Settings menu ---
 const settingsMenu = [
   {
     label: "Exit Master",
@@ -72,7 +72,7 @@ const settingsMenu = [
   },
 ];
 
-// --- Masters section inside Settings ---
+// --- Masters section ---
 const mastersItems = [
   { label: "Employee Master", path: "/settings/employee-master", icon: PersonIcon },
   { label: "Designation", path: "/settings/designation", icon: WorkIcon },
@@ -130,12 +130,12 @@ const Sidebar = () => {
       </Box>
 
       {isSettingsPage ? (
-        /* --- SETTINGS VIEW --- */
+        /* --- Settings menu view --- */
         <Box>
           {/* Exit Master */}
           <List dense disablePadding>
             {settingsMenu.map((item) => {
-              const IconComp = item.icon;
+              const IconComponent = item.icon;
               return (
                 <ListItem key={item.path} disablePadding>
                   <ListItemButton
@@ -143,7 +143,7 @@ const Sidebar = () => {
                     sx={{ px: 3, py: 1 }}
                   >
                     <ListItemIcon sx={{ color: "#999", minWidth: 36 }}>
-                      <IconComp fontSize="small" />
+                      <IconComponent fontSize="small" />
                     </ListItemIcon>
                     <ListItemText
                       primary={item.label}
@@ -159,7 +159,7 @@ const Sidebar = () => {
             })}
           </List>
 
-          {/* Masters section */}
+          {/* Masters submenu */}
           <Box sx={{ mt: 2 }}>
             <Typography
               variant="subtitle2"
@@ -177,7 +177,7 @@ const Sidebar = () => {
             <List dense disablePadding>
               {mastersItems.map((item) => {
                 const isActive = location.pathname === item.path;
-                const IconComp = item.icon;
+                const IconComponent = item.icon;
                 return (
                   <ListItem key={item.path} disablePadding>
                     <ListItemButton
@@ -187,8 +187,8 @@ const Sidebar = () => {
                         px: 3,
                         py: 1,
                         "&.Mui-selected": {
-                          backgroundColor: "rgba(255, 106, 0, 0.08)",
-                          borderRight: "3px solid #FF6A00",
+                          backgroundColor: "#f2f2f2",
+                          borderLeft: "3px solid #FF6A00",
                         },
                       }}
                     >
@@ -198,14 +198,14 @@ const Sidebar = () => {
                           minWidth: 36,
                         }}
                       >
-                        <IconComp fontSize="small" />
+                        <IconComponent fontSize="small" />
                       </ListItemIcon>
                       <ListItemText
                         primary={item.label}
                         primaryTypographyProps={{
                           fontSize: "0.875rem",
                           fontWeight: isActive ? 500 : 400,
-                          color: isActive ? "#FF6A00" : "#333",
+                          color: isActive ? "#000000ff" : "#333",
                         }}
                       />
                     </ListItemButton>
@@ -237,7 +237,7 @@ const Sidebar = () => {
           </Box>
         </Box>
       ) : (
-        /* --- MAIN MENU VIEW --- */
+        /* --- Main menu view --- */
         <>
           {menuSections.map((section) => (
             <Box key={section.title} sx={{ mb: 3 }}>
@@ -262,9 +262,20 @@ const Sidebar = () => {
                       <ListItemButton
                         selected={isActive}
                         onClick={() => handleNavigation(item.path)}
+                        sx={{
+                          px: 3,
+                          py: 1,
+                          "&.Mui-selected": {
+                            backgroundColor: "#f2f2f2",
+                            borderLeft: "3px solid #FF6A00",
+                          },
+                        }}
                       >
                         <ListItemIcon
-                          sx={{ color: isActive ? "#FF6A00" : "#999" }}
+                          sx={{
+                            color: isActive ? "#FF6A00" : "#999",
+                            minWidth: 36,
+                          }}
                         >
                           <NotificationIcon fontSize="small" />
                         </ListItemIcon>
@@ -273,7 +284,7 @@ const Sidebar = () => {
                           primaryTypographyProps={{
                             fontSize: "0.875rem",
                             fontWeight: isActive ? 500 : 400,
-                            color: isActive ? "#FF6A00" : "#333",
+                            color: isActive ? "#000000ff" : "#333",
                           }}
                         />
                       </ListItemButton>

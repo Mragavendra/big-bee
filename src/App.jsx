@@ -62,6 +62,10 @@ import TypeOfAdvertisingEdit from './pages/settings/typeofadvertising/TypeOfAdve
 import MarketingChannelAdd from './pages/settings/marketingchannel/MarketingChannelAdd';
 import MarketingChannelEdit from './pages/settings/marketingchannel/MarketingChannelEdit';
 import UserProfileForm from './pages/profile/UserProfileForm';
+import PerformanceMisTable from './pages/projectfinancials/performancemis/PerformanceMisTable';
+import { PerformanceMisAdd } from './pages/projectfinancials/performancemis/PerformanceMisAdd';
+import { PerformanceMisEdit } from './pages/projectfinancials/performancemis/PerformanceMisEdit';
+import FinancialMisAdd from './pages/projectfinancials/financialmis/FinancialMisAdd';
 function App() {
   return (
     <Layout>
@@ -82,12 +86,15 @@ function App() {
         <Route path="/meeting" element={<Meeting />} />
         <Route path="/profitability-analysis" element={<ProfitabilityAnalysis />} />
         <Route path="/financial-mis" element={<FinancialMis/>} />
+        <Route path="/financial-mis/add" element={<FinancialMisAdd/>} />
+        <Route path="/performance-mis" element={<PerformanceMisTable/>} />
+        <Route path="/performance-mis/add" element={<PerformanceMisAdd/>} />
+        <Route path="/performance-mis/edit/:id" element={<PerformanceMisEdit/>} />
         <Route path="/profile" element={<UserProfileForm/>} />
 
 
 
                   {/* ==== settings======= */}
-
         <Route path="/settings" element={<Settings />} />
         <Route path="/settings/employee-master" element={<EmployeeMasterTable/>} />
         <Route path="/settings/employee-master/add" element={<EmployeeMasterAdd/>} />

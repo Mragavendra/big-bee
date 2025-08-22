@@ -1,3 +1,4 @@
+// FunnelReview.jsx
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
@@ -7,7 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 const FunnelReview = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  
   const columns = [
     { id: 'funnelStatus', label: 'Funnel Status', width: 120 },
     { id: 'leadDate', label: 'Lead Date', width: 100 },
@@ -68,7 +69,8 @@ const FunnelReview = () => {
       priority: 'hot',
       brief: 'Brief',
       comment: 'Comment',
-      category: 'General'
+      category: 'General',
+      status: 'Active',
     },
     {
       id: '2',
@@ -99,7 +101,8 @@ const FunnelReview = () => {
       priority: 'hot',
       brief: 'Brief',
       comment: 'Comment',
-      category: 'General'
+      category: 'VIP',
+      status: 'Active',
     },
     {
       id: '3',
@@ -130,8 +133,9 @@ const FunnelReview = () => {
       priority: 'hot',
       brief: 'Brief',
       comment: 'Comment',
-      category: 'General'
-    }
+      category: 'General',
+      status: 'Inactive',
+    },
   ];
 
   const headerButtons = [
@@ -152,7 +156,7 @@ const FunnelReview = () => {
       data={data}
       rowsPerPage={10}
       headerButtons={headerButtons}
-      addButtonLabel="Add"
+      addButtonLabel="Add Funnel Review"
       addButtonProps={{
         color: 'primary',
         size: 'small',
@@ -161,13 +165,11 @@ const FunnelReview = () => {
       }}
       searchPlaceholder="Search for item"
       categoryLabel="All Categories"
-      statusLabel="" // Removed status filter
+      statusLabel="All Status"
       disableEdit={false}
       disableDelete={false}
-      disableView={true} // Disabled view column
-      disableStatus="" // Disabled status column
-      showPagination={true}
-      paginationText="Showing 10 out of 312"
+      disableView={true}
+      showAssignColumn={false}
     />
   );
 };

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AddOrder = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     // Order Details
     orderId: 'LED044',
@@ -59,16 +61,29 @@ const AddOrder = () => {
     // Add your form submission logic here
   };
 
+  const handleCancel = () => {
+    navigate('/order');
+  };
+
   return (
     <div className="mx-auto p-6 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Edit Order</h1>
-        <button 
-          onClick={handleSubmit}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium transition-colors"
-        >
-          Save
-        </button>
+        <div className="flex gap-3">
+         <button
+  onClick={handleCancel}
+  className="bg-gray-300 hover:bg-blue-600 text-white px-6 py-2 rounded-md font-medium transition-colors"
+>
+  Cancel
+</button>
+
+          <button 
+            onClick={handleSubmit}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium transition-colors"
+          >
+            Save
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -322,7 +337,7 @@ const AddOrder = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pincode*
+                    Pincode*
                 </label>
                 <input
                   type="text"
@@ -390,11 +405,11 @@ const AddOrder = () => {
                 </label>
                 <input
                   type="text"
-                  name="discount"
-                  value={formData.discount}
-                  onChange={handleInputChange}
-                  placeholder="Enter Description"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    name="discount"
+                    value={formData.discount}
+                    onChange={handleInputChange}
+                    placeholder="Enter Description"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
               <div>

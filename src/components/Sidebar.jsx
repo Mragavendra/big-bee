@@ -33,29 +33,30 @@ import bigBeeLogo from "../assets/big-beelogo.svg";
 const menuSections = [
   {
     title: "Main menu",
-    items: [{ text: "Dashboard", path: "/dashboard" }],
+    items: [{ text: "Dashboard", path: "/dashboard", icon: NotificationIcon }],
   },
   {
     title: "CRM",
     items: [
-      { text: "Lead Capture", path: "/lead-capture" },
-      { text: "Funnel Review", path: "/funnel-review" },
-      { text: "Marketing ROI Tracker", path: "/marketing-roi" },
-      { text: "Order", path: "/order" },
+      { text: "Lead Capture", path: "/lead-capture", icon: NotificationIcon },
+      { text: "Funnel Review", path: "/funnel-review", icon: NotificationIcon },
+      { text: "Marketing ROI Tracker", path: "/marketing-roi", icon: NotificationIcon },
+      { text: "Order", path: "/order", icon: NotificationIcon },
     ],
   },
   {
     title: "Performance & Activity",
     items: [
-      { text: "KRA", path: "/kra" },
-      { text: "Meeting", path: "/meeting" },
+      { text: "KRA", path: "/kra", icon: NotificationIcon },
+      { text: "Meeting", path: "/meeting", icon: NotificationIcon },
     ],
   },
   {
     title: "Project Financials",
     items: [
-      { text: "Profitability Analysis", path: "/profitability-analysis" },
-      { text: "Financial MIS", path: "/financial-mis" },
+      { text: "Profitability Analysis", path: "/profitability-analysis", icon: NotificationIcon },
+      { text: "Financial MIS", path: "/financial-mis", icon: NotificationIcon },
+      { text: "Performance MIS", path: "/performance-mis", icon: NotificationIcon },
     ],
   },
 ];
@@ -65,26 +66,26 @@ const settingsMenu = [
   {
     label: "Exit Master",
     path: "/dashboard",
-    icon: ArrowBackIcon,
+    icon: ArrowBackIcon, // This will remain ArrowBackIcon
   },
 ];
 
 // Masters section
 const mastersItems = [
-  { label: "Employee Master", path: "/settings/employee-master", icon: PersonIcon },
-  { label: "Designation", path: "/settings/designation", icon: WorkIcon },
-  { label: "Department", path: "/settings/department", icon: BusinessIcon },
-  { label: "Lead Type", path: "/settings/lead-type", icon: LabelIcon },
-  { label: "Lead Source", path: "/settings/lead-source", icon: SourceIcon },
-  { label: "Category", path: "/settings/category", icon: CategoryIcon },
-  { label: "Action", path: "/settings/action", icon: ActionIcon },
-  { label: "Status", path: "/settings/status", icon: StatusIcon },
-  { label: "Follow Up Mode", path: "/settings/follow-up-mode", icon: FollowUpIcon },
-  { label: "Company", path: "/settings/company", icon: BusinessIcon },
-  { label: "Services", path: "/settings/services", icon: ServicesIcon },
-  { label: "Campaign Type", path: "/settings/campaign-type", icon: CampaignIcon },
-  { label: "Type of Advertising", path: "/settings/type-of-advertising", icon: CampaignIcon },
-  { label: "Marketing Channel", path: "/settings/marketing-channel", icon: MarketingIcon },
+  { label: "Employee Master", path: "/settings/employee-master", icon: NotificationIcon },
+  { label: "Designation", path: "/settings/designation", icon: NotificationIcon },
+  { label: "Department", path: "/settings/department", icon: NotificationIcon },
+  { label: "Lead Type", path: "/settings/lead-type", icon: NotificationIcon },
+  { label: "Lead Source", path: "/settings/lead-source", icon: NotificationIcon },
+  { label: "Category", path: "/settings/category", icon: NotificationIcon },
+  { label: "Action", path: "/settings/action", icon: NotificationIcon },
+  { label: "Status", path: "/settings/status", icon: NotificationIcon },
+  { label: "Follow Up Mode", path: "/settings/follow-up-mode", icon: NotificationIcon },
+  { label: "Company", path: "/settings/company", icon: NotificationIcon },
+  { label: "Services", path: "/settings/services", icon: NotificationIcon },
+  { label: "Campaign Type", path: "/settings/campaign-type", icon: NotificationIcon },
+  { label: "Type of Advertising", path: "/settings/type-of-advertising", icon: NotificationIcon },
+  { label: "Marketing Channel", path: "/settings/marketing-channel", icon: NotificationIcon },
 ];
 
 const Sidebar = () => {
@@ -287,6 +288,7 @@ const Sidebar = () => {
               <List dense disablePadding>
                 {section.items.map((item) => {
                   const isActive = location.pathname === item.path;
+                  const IconComponent = item.icon;
                   return (
                     <ListItem key={item.text} disablePadding>
                       <ListItemButton
@@ -315,7 +317,7 @@ const Sidebar = () => {
                             minWidth: 36,
                           }}
                         >
-                          <NotificationIcon fontSize="small" />
+                          <IconComponent fontSize="small" />
                         </ListItemIcon>
                         <ListItemText
                           primary={item.text}
@@ -356,7 +358,7 @@ const Sidebar = () => {
                       color: location.pathname.startsWith("/settings") ? "#FF6A00" : "#999",
                     }}
                   >
-                    <SettingsIcon fontSize="small" />
+                    <NotificationIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText
                     primary="Settings"
@@ -371,6 +373,7 @@ const Sidebar = () => {
 
               <ListItem disablePadding>
                 <ListItemButton
+                  onClick={() => navigate("/logout")}
                   sx={{
                     transition: "all 0.25s ease",
                     "&:hover": {
@@ -390,7 +393,7 @@ const Sidebar = () => {
                     primaryTypographyProps={{
                       fontSize: "0.875rem",
                       fontWeight: 400,
-                      color: "#333",
+                      color: "#000000ff",
                     }}
                   />
                 </ListItemButton>
@@ -402,5 +405,4 @@ const Sidebar = () => {
     </Box>
   );
 };
-
 export default Sidebar;

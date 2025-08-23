@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // import useNavigate
+import { useNavigate } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import { Calendar, Download, Eye } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 
 const bceChartData = [
   { name: "Billing", value: 20000000 },
@@ -239,69 +239,71 @@ const FinancialMis = () => {
           </div>
         </div>
 
-        {/* Controls Right of Tabs */}
-        <div className="flex items-center gap-2">
-          {/* Export button */}
-          <button className="bg-white border border-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-50">
-            Export
-          </button>
+        {/* Controls Right of Tabs - Only show for Monthly MIS tab */}
+        {value === 0 && (
+          <div className="flex items-center gap-2">
+            {/* Export button */}
+            <button className="bg-white border border-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-50">
+              Export
+            </button>
 
-          {/* Year Dropdown */}
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            className="bg-white border border-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-lg"
-          >
-            <option value="2024-25">2024-25</option>
-            <option value="2025-26">2025-26</option>
-          </select>
+            {/* Year Dropdown */}
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="bg-white border border-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-lg"
+            >
+              <option value="2024-25">2024-25</option>
+              <option value="2025-26">2025-26</option>
+            </select>
 
-          {/* Month Dropdown */}
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="bg-white border border-gray-300 text-gray-800 text-sm font-medium px-3 py-2 rounded-lg"
-          >
-            {[
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ].map((month) => (
-              <option key={month} value={month}>
-                {month}
-              </option>
-            ))}
-          </select>
+            {/* Month Dropdown */}
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="bg-white border border-gray-300 text-gray-800 text-sm font-medium px-3 py-2 rounded-lg"
+            >
+              {[
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ].map((month) => (
+                <option key={month} value={month}>
+                  {month}
+                </option>
+              ))}
+            </select>
 
-          {/* Edit Button */}
-          <button
-            className="border border-orange-400 text-orange-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-orange-50 flex items-center"
-            style={{ textTransform: "none" }}
-            onClick={handleEditClick}
-          >
-            <EditIcon className="mr-1" style={{ fontSize: 18 }} />
-            Edit
-          </button>
+            {/* Edit Button */}
+            <button
+              className="border border-orange-400 text-orange-600 text-sm font-medium px-4 py-2 rounded-lg hover:bg-orange-50 flex items-center"
+              style={{ textTransform: "none" }}
+              onClick={handleEditClick}
+            >
+              <EditIcon className="mr-1" style={{ fontSize: 18 }} />
+              Edit
+            </button>
 
-          {/* Add Button */}
-          <button
-            className="bg-orange-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center"
-            style={{ textTransform: "none" }}
-            onClick={handleAddClick}
-          >
-            <AddIcon className="mr-1" style={{ fontSize: 18 }} />
-            Add
-          </button>
-        </div>
+            {/* Add Button */}
+            <button
+              className="bg-orange-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-orange-600 flex items-center"
+              style={{ textTransform: "none" }}
+              onClick={handleAddClick}
+            >
+              <AddIcon className="mr-1" style={{ fontSize: 18 }} />
+              Add
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Tab Content */}
@@ -458,7 +460,7 @@ const FinancialMis = () => {
         <div className="bg-white rounded-lg shadow-sm border p-8">
           <h2 className="text-xl font-semibold mb-4">YOY Analysis</h2>
         </div>
-      </TabPanel>I. 
+      </TabPanel>
 
       <TabPanel value={value} index={3}>
         <div className="bg-white rounded-lg shadow-sm border p-8">

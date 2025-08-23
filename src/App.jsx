@@ -66,6 +66,8 @@ import PerformanceMisTable from './pages/projectfinancials/performancemis/Perfor
 import { PerformanceMisAdd } from './pages/projectfinancials/performancemis/PerformanceMisAdd';
 import { PerformanceMisEdit } from './pages/projectfinancials/performancemis/PerformanceMisEdit';
 import FinancialMisAdd from './pages/projectfinancials/financialmis/FinancialMisAdd';
+import ProfitabilitySummaryAdd from './pages/projectfinancials/profitabilityanalysis/ProfitabilitySummaryAdd';
+import ProfitabilitySummaryEdit from './pages/projectfinancials/profitabilityanalysis/ProfitabilitySummaryEdit';
 function App() {
   return (
     <Layout>
@@ -85,6 +87,8 @@ function App() {
         <Route path="/kra" element={<KRA />} />
         <Route path="/meeting" element={<Meeting />} />
         <Route path="/profitability-analysis" element={<ProfitabilityAnalysis />} />
+        <Route path="/profitability-analysis/add" element={<ProfitabilitySummaryAdd />} />
+        <Route path="/profitability-analysis/edit/:id" element={<ProfitabilitySummaryEdit />} />
         <Route path="/financial-mis" element={<FinancialMis/>} />
         <Route path="/financial-mis/add" element={<FinancialMisAdd/>} />
         <Route path="/performance-mis" element={<PerformanceMisTable/>} />

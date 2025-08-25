@@ -68,6 +68,7 @@ import { PerformanceMisEdit } from './pages/projectfinancials/performancemis/Per
 import FinancialMisAdd from './pages/projectfinancials/financialmis/FinancialMisAdd';
 import ProfitabilitySummaryAdd from './pages/projectfinancials/profitabilityanalysis/ProfitabilitySummaryAdd';
 import ProfitabilitySummaryEdit from './pages/projectfinancials/profitabilityanalysis/ProfitabilitySummaryEdit';
+import FinancialMisEdit from './pages/projectfinancials/financialmis/FinancialMisEdit';
 function App() {
   return (
     <Layout>
@@ -91,6 +92,7 @@ function App() {
         <Route path="/profitability-analysis/edit/:id" element={<ProfitabilitySummaryEdit />} />
         <Route path="/financial-mis" element={<FinancialMis/>} />
         <Route path="/financial-mis/add" element={<FinancialMisAdd/>} />
+        <Route path="/financial-mis/edit/:id" element={<FinancialMisEdit/>} />
         <Route path="/performance-mis" element={<PerformanceMisTable/>} />
         <Route path="/performance-mis/add" element={<PerformanceMisAdd/>} />
         <Route path="/performance-mis/edit/:id" element={<PerformanceMisEdit/>} />

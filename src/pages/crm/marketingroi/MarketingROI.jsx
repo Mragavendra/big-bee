@@ -176,7 +176,7 @@ const MarketingROI = () => {
   }));
 
   return (
-    <Box sx={{ bgcolor: '#F9FAFB', minHeight: '100vh' }}>
+    <Box sx={{ minHeight: '100vh' }}>
       {/* Header with Tabs */}
       <Box sx={{ bgcolor: 'white', borderBottom: 1, borderColor: 'divider', px: 4, py: 2 }}>
         <Stack direction="row" spacing={1}>

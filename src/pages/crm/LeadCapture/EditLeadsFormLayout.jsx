@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const EditLeadsFormLayout = () => {
+const EditLeadsFormLayoutForm = () => {
   const { id } = useParams(); // Get ID from route params
   const navigate = useNavigate(); // Navigation hook
 
@@ -394,4 +394,4 @@ const EditLeadsFormLayout = () => {
   );
 };
 
-export default EditLeadsFormLayout;
+export default EditLeadsFormLayoutForm;

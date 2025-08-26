@@ -223,7 +223,7 @@ const OrderBookings = () => {
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border">
                   Budget
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                <th className="px-4 py-0 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border">
                   Actual
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border">
@@ -276,7 +276,7 @@ const SalesBillings = () => {
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
       <div 
-        className="flex items-center justify-between cursor-pointer"
+        className=" items-center justify-between cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
         <h2 className="text-lg font-medium text-gray-800">Sales - Billings</h2>
@@ -330,7 +330,7 @@ const SalesBillings = () => {
                 <td className="px-4 py-3 text-sm text-gray-900 border">Total - Billings</td>
                 <td className="px-4 py-3 text-sm text-gray-900 text-right border">44,00,00,000</td>
                 <td className="px-4 py-3 text-sm text-gray-900 text-right border">39,38,039</td>
-                <td className="px-4 py-3 text-sm text-gray-900 text-right border">43,60,61,961</td>
+                <td className="px-4 py-3 text-sm text-gray-900 text border">43,60,61,961</td>
                 <td className="px-4 py-3 text-sm text-gray-900 text-right border">2</td>
               </tr>
             </tfoot>
@@ -619,7 +619,7 @@ const AnnualSummary = () => {
           <div className="overflow-x-auto mb-6">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-gray-50">
+                <tr className="bg-ray-50">
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
                     Annual Summary
                   </th>
@@ -639,6 +639,132 @@ const AnnualSummary = () => {
               </thead>
               <tbody>
                 {annualSummaryData.map((row, index) => (
+                  <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 border">
+                      {row.category}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500 text-right border">
+                      {row.budget}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500 text-right border">
+                      {row.actual}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500 text-right border">
+                      {row.variance}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500 text-right border">
+                      {row.actualPercent}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      <OrderBookings />
+      <SalesBillings />
+      <Collection />
+      <Expenses />
+    </div>
+  );
+};
+
+const OverallSummary = () => {
+  const [selectedYear, setSelectedYear] = useState("2025-26");
+  const [selectedPeriod, setSelectedPeriod] = useState("All FY Months");
+  const [isSummaryOpen, setIsSummaryOpen] = useState(true);
+
+  const overallSummaryData = [
+    {
+      category: "Order Bookings",
+      budget: "0",
+      actual: "0",
+      variance: "0",
+      actualPercent: "0"
+    },
+    {
+      category: "Sales - Billings",
+      budget: "0",
+      actual: "39,38,039",
+      variance: "0",
+      actualPercent: "0"
+    },
+    {
+      category: "Collection",
+      budget: "0",
+      actual: "90,25,544",
+      variance: "0",
+      actualPercent: "0"
+    },
+    {
+      category: "Expenses",
+      budget: "38,64,28,073",
+      actual: "59,63,572",
+      variance: "38,04,64,501",
+      actualPercent: "1.54"
+    },
+    {
+      category: "Profits",
+      budget: "0",
+      actual: "-20,25,533",
+      variance: "0",
+      actualPercent: "0"
+    },
+    {
+      category: "Cash Flow",
+      budget: "0",
+      actual: "30,61,972",
+      variance: "0",
+      actualPercent: "0"
+    }
+  ];
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div 
+        className="flex justify-between items-center mb-6 cursor-pointer"
+        onClick={() => setIsSummaryOpen(!isSummaryOpen)}
+      >
+        <h1 className="text-xl font-semibold text-gray-900">Overall Summary</h1>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-600">{selectedYear}</span>
+          <span className="text-sm text-gray-600">•</span>
+          <span className="text-sm text-gray-600">{selectedPeriod}</span>
+          {isSummaryOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+        </div>
+      </div>
+
+      {isSummaryOpen && (
+        <>
+          <div className="bg-gray-50 p-4 rounded-lg mb-6">
+            <h2 className="text-lg font-medium text-gray-800">Total</h2>
+          </div>
+
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                    Overall Summary
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                    Budget
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                    Actual
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                    Variance
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider border">
+                    Actual %
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {overallSummaryData.map((row, index) => (
                   <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 border">
                       {row.category}
@@ -710,7 +836,7 @@ const FinancialMis = () => {
         </div>
 
         {value === 0 && (
-          <div className="flex items-center gap-2">
+          <div className="items-center gap-2">
             <button className="bg-white border border-gray-300 text-gray-800 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-50">
               Export
             </button>
@@ -769,10 +895,10 @@ const FinancialMis = () => {
       <TabPanel value={value} index={0}>
         <div className="flex gap-4 mb-4">
           <div className="flex-1 bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-base font-semibold mb-4">
+            <h3 className="text-base font-semib mb-4">
               Billing - Collection - Expenses
             </h3>
-            <ResponsiveContainer width="100%" height={160}>
+            <ResponsiveContainer width="0%" height={160}>
               <BarChart data={bceChartData}>
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -795,7 +921,7 @@ const FinancialMis = () => {
         </div>
 
         <div className="mb-4">
-          <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="bg-white rounded-lg shadow border p-6">
             <h3 className="text-base font-semibold mb-4">Collection Vs Expenses</h3>
             <ResponsiveContainer width="100%" height={120}>
               <BarChart
@@ -916,12 +1042,9 @@ const FinancialMis = () => {
       </TabPanel>
 
       <TabPanel value={value} index={3}>
-        <div className="bg-white rounded-lg shadow-sm border p-8">
-          <h2 className="text-xl font-semibold mb-4">Overall Summary</h2>
-        </div>
+        <OverallSummary />
       </TabPanel>
     </div>
   );
 };
-
 export default FinancialMis;

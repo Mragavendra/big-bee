@@ -31,7 +31,6 @@ import ProfitabilitySummaryAdd from './pages/projectfinancials/profitabilityanal
 import ProfitabilitySummaryEdit from './pages/projectfinancials/profitabilityanalysis/ProfitabilitySummaryEdit';
 import FinancialMis from './pages/projectfinancials/financialmis/FinancialMis';
 import FinancialMisAdd from './pages/projectfinancials/financialmis/FinancialMisAdd';
-import FinancialMisEdit from './pages/projectfinancials/financialmis/FinancialMisEdit';
 
 // Performance MIS
 import PerformanceMisTable from './pages/projectfinancials/performancemis/PerformanceMisTable';
@@ -100,6 +99,7 @@ import MarketingChannelAdd from './pages/settings/marketingchannel/MarketingChan
 import MarketingChannelEdit from './pages/settings/marketingchannel/MarketingChannelEdit';
 import EditLeadsFormLayoutForm from './pages/crm/LeadCapture/EditLeadsFormLayout';
 import AddLeadsFormLayout from './pages/crm/LeadCapture/AddLeadsFormLayout';
+import FinancialMisEdit from './pages/projectfinancials/financialmis/FinancialMisEdit';
 
 
 function App() {
@@ -125,7 +125,7 @@ function App() {
         <Route path="/profitability-analysis/edit/:id" element={<ProfitabilitySummaryEdit />} />
         <Route path="/financial-mis" element={<FinancialMis />} />
         <Route path="/financial-mis/add" element={<FinancialMisAdd />} />
-        <Route path="/financial-mis/edit/:id" element={<FinancialMisEdit />} />
+        <Route path="/financial-mis/edit/:id" element={<FinancialMisEdit/>} />
         <Route path="/performance-mis" element={<PerformanceMisTable />} />
         <Route path="/performance-mis/add" element={<PerformanceMisAdd />} />
         <Route path="/performance-mis/edit/:id" element={<PerformanceMisEdit />} />

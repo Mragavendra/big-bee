@@ -100,6 +100,7 @@ import MarketingChannelEdit from './pages/settings/marketingchannel/MarketingCha
 import EditLeadsFormLayoutForm from './pages/crm/LeadCapture/EditLeadsFormLayout';
 import AddLeadsFormLayout from './pages/crm/LeadCapture/AddLeadsFormLayout';
 import FinancialMisEdit from './pages/projectfinancials/financialmis/FinancialMisEdit';
+import MarketingCampaignPerformance from './pages/crm/marketingroi/MarketingCampaignPerformance';
 
 
 function App() {
@@ -115,6 +116,7 @@ function App() {
         <Route path="/funnel-review/add" element={<AddFunnelReview />} />
         <Route path="/funnel-review/edit/:id" element={<EditFunnelReview />} />
         <Route path="/marketing-roi" element={<MarketingROI />} />
+        <Route path="/marketing-roi/add" element={<MarketingCampaignPerformance/>} />
         <Route path="/order" element={<Order />} />
         <Route path="/order/add" element={<AddOrder />} />
         <Route path="/order/edit/:id" element={<EditOrder />} />

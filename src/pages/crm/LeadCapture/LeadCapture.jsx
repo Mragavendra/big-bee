@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
-import { 
+import {
   AssignmentInd as AssignmentIndIcon,
   UploadFile as UploadFileIcon,
   Add as AddIcon
@@ -76,21 +76,10 @@ const LeadCapture = () => {
       headerButtons={headerButtons}
       addButtonLabel="Add Leads"
       addButtonProps={{
-        variant: 'contained',
+        color: 'primary',
         size: 'small',
-        startIcon: <AddIcon fontSize="small" />,
-        sx: {
-          backgroundColor: '#FF9800',
-          color: '#FFF',
-          '&:hover': {
-            backgroundColor: '#F57C00',
-          },
-          textTransform: 'none',
-          borderRadius: '8px',
-          fontWeight: 500,
-          boxShadow: 'none',
-        },
-        onClick: () => navigate(`${location.pathname}/add`),
+        startIcon: <AddIcon />,
+        sx: { textTransform: 'none' }
       }}
       searchPlaceholder="Search leads..."
       categoryLabel="All Categories"

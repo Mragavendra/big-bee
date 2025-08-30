@@ -343,7 +343,6 @@ const MarketingROI = () => {
       </TableContainer>
     </Box>
   );
-
   return (
     <Box>
       <Box

@@ -23,7 +23,56 @@ const LeadCapture = () => {
   ];
 
   const data = [
-    // your data objects here
+    {
+      enquiryNo: 'ENQ001',
+      leadDate: '2025-09-01',
+      leadType: 'New',
+      leadSource: 'Website',
+      prospect: 'John Doe',
+      mobileNumber: '9876543210',
+      assignedBde: 'Alice Smith',
+      assignedCs: 'Bob Johnson',
+    },
+    {
+      enquiryNo: 'ENQ002',
+      leadDate: '2025-09-02',
+      leadType: 'Follow-up',
+      leadSource: 'Referral',
+      prospect: 'Jane Roe',
+      mobileNumber: '9123456780',
+      assignedBde: 'Charlie Brown',
+      assignedCs: 'Daisy Miller',
+    },
+    {
+      enquiryNo: 'ENQ003',
+      leadDate: '2025-09-03',
+      leadType: 'New',
+      leadSource: 'Email Campaign',
+      prospect: 'Michael Scott',
+      mobileNumber: '9988776655',
+      assignedBde: 'Pam Beesly',
+      assignedCs: 'Jim Halpert',
+    },
+    {
+      enquiryNo: 'ENQ004',
+      leadDate: '2025-09-04',
+      leadType: 'New',
+      leadSource: 'Social Media',
+      prospect: 'Dwight Schrute',
+      mobileNumber: '9012345678',
+      assignedBde: 'Angela Martin',
+      assignedCs: 'Oscar Martinez',
+    },
+    {
+      enquiryNo: 'ENQ005',
+      leadDate: '2025-09-05',
+      leadType: 'Follow-up',
+      leadSource: 'Website',
+      prospect: 'Stanley Hudson',
+      mobileNumber: '9234567890',
+      assignedBde: 'Phyllis Vance',
+      assignedCs: 'Meredith Palmer',
+    },
   ];
 
   const headerButtons = [

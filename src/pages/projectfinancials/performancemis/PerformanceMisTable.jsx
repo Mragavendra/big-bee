@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import DynamicTable from "../../../table/DynamicTable";
 import { useNavigate } from "react-router-dom";
-
 // Billing columns (with link)
 const billingColumns = [
   {
@@ -50,7 +49,6 @@ const billingColumns = [
   { id: "creditNote", label: "Credit Note", align: "right" },
   { id: "balanceAfterTds", label: "Balance After TDS", align: "right" },
 ];
-
 // Billing data
 const billingData = [
   {
@@ -90,7 +88,6 @@ const billingData = [
     status: "Active",
   },
 ];
-
 // BBC Analysis data - Monthly breakdown
 const bbcMonthlyData = [
   { month: "Apr", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
@@ -106,7 +103,6 @@ const bbcMonthlyData = [
   { month: "Feb", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
   { month: "Mar", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
 ];
-
 // BBC Quarterly data
 const bbcQuarterlyData = [
   { quarter: "Q1", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
@@ -114,8 +110,7 @@ const bbcQuarterlyData = [
   { quarter: "Q3", bookingGoal: "20,00,000", bookingActual: "10,00,000", bookingGap: 50, bookingAch: 50, billingGoal: 50, billingActual: 50, billingGap: 50, billingAch: 50, collection: 0 },
   { quarter: "Q4", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
 ];
-
-// YOY Analysis data
+// YOY Analysis data - monthly
 const yoyMonthlyData = [
   { month: "Apr", fy2526: { billing: 0, growth: 0, growthPercent: 0 }, fy2425: { billing: 0, growth: 0, growthPercent: 0 }, fy2324: { billing: 0, growth: 0, growthPercent: 0 }, fy2223: { billing: 0, growth: 0, growthPercent: 0 } },
   { month: "May", fy2526: { billing: 0, growth: 0, growthPercent: 0 }, fy2425: { billing: 0, growth: 0, growthPercent: 0 }, fy2324: { billing: 0, growth: 0, growthPercent: 0 }, fy2223: { billing: 0, growth: 0, growthPercent: 0 } },
@@ -125,7 +120,6 @@ const yoyMonthlyData = [
   { month: "Sep", fy2526: { billing: 0, growth: 0, growthPercent: 0 }, fy2425: { billing: 0, growth: 0, growthPercent: 0 }, fy2324: { billing: 0, growth: 0, growthPercent: 0 }, fy2223: { billing: 0, growth: 0, growthPercent: 0 } },
   { month: "Oct", fy2526: { billing: 0, growth: 0, growthPercent: 0 }, fy2425: { billing: 0, growth: 0, growthPercent: 0 }, fy2324: { billing: 0, growth: 0, growthPercent: 0 }, fy2223: { billing: 0, growth: 0, growthPercent: 0 } },
 ];
-
 function TabPanel({ children, value, index }) {
   return (
     <div role="tabpanel" hidden={value !== index}>
@@ -133,19 +127,15 @@ function TabPanel({ children, value, index }) {
     </div>
   );
 }
-
-const PerformanceMisEdit = () => {
+const PerformanceMisTable = () => {
   const [value, setValue] = useState(0);
   const navigate = useNavigate();
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
   const handleAddNew = () => {
     navigate("/performance-mis/add");
   };
-
   return (
     <Box>
       <Box
@@ -243,7 +233,6 @@ const PerformanceMisEdit = () => {
           />
         </Tabs>
       </Box>
-
       {/* Billing Tab */}
       <TabPanel value={value} index={0}>
         <DynamicTable
@@ -277,7 +266,6 @@ const PerformanceMisEdit = () => {
           categoryField="bdLead"
         />
       </TabPanel>
-
       {/* BBC Tab */}
       <TabPanel value={value} index={1}>
         <Box>
@@ -350,7 +338,6 @@ const PerformanceMisEdit = () => {
               </TableBody>
             </Table>
           </TableContainer>
-
           {/* Quarterly Performance Summary */}
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
             Quarterly Performance Summary - Total
@@ -415,14 +402,12 @@ const PerformanceMisEdit = () => {
           </TableContainer>
         </Box>
       </TabPanel>
-
       {/* YOY Analysis Tab */}
       <TabPanel value={value} index={2}>
         <Box>
           <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
             YOY Analysis
           </Typography>
-
           {/* YOY Bar Charts Section */}
           <Box sx={{ display: 'flex', gap: 4, mb: 4 }}>
             {/* YOY Analysis Chart */}
@@ -464,7 +449,6 @@ const PerformanceMisEdit = () => {
                 </Typography>
               </CardContent>
             </Card>
-
             {/* Quarter Analysis Chart */}
             <Card sx={{ flex: 1 }}>
               <CardContent>
@@ -520,7 +504,6 @@ const PerformanceMisEdit = () => {
               </CardContent>
             </Card>
           </Box>
-
           {/* YOY Analysis Table */}
           <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
             YOY Analysis
@@ -578,19 +561,85 @@ const PerformanceMisEdit = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          {/* BookingDetails Quarter Analysis Table */}
+          <Typography variant="subtitle1" sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
+            BookingDetails - Quarter Analysis
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell 
+                    rowSpan={2} 
+                    sx={{ fontWeight: 'bold', textAlign: 'center', verticalAlign: 'middle', backgroundColor: '#f5f5f5' }}
+                  >
+                    Month
+                  </TableCell>
+                  {["FY2526", "FY2425", "FY2324", "FY2223"].map((fy) => (
+                    <TableCell
+                      key={fy}
+                      colSpan={3}
+                      sx={{ fontWeight: 'bold', textAlign: 'center', backgroundColor: '#f5f5f5' }}
+                    >
+                      {fy}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                <TableRow>
+                  {Array(4).fill(["Billing", "Growth", "Growth %"]).flat().map((label, idx) => (
+                    <TableCell
+                      key={idx}
+                      sx={{ fontWeight: 'bold', textAlign: 'center', backgroundColor: '#f5f5f5', fontSize: '0.75rem' }}
+                    >
+                      {label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {["Q1", "Q2", "Q3", "Q4"].map((quarter) => {
+                  // Example static data for quarterly booking analysis
+                  const quarterData = {
+                    fy2526: { billing: 0, growth: 0, growthPercent: 0 },
+                    fy2425: { billing: 0, growth: 0, growthPercent: 0 },
+                    fy2324: { billing: 0, growth: 0, growthPercent: 0 },
+                    fy2223: { billing: 0, growth: 0, growthPercent: 0 }
+                  };
 
+                  if (quarter === "Q3") {
+                    quarterData.fy2526 = { billing: "20,00,000", growth: "10,00,000", growthPercent: 50 };
+                    quarterData.fy2425 = { billing: 50, growth: 50, growthPercent: 50 };
+                    quarterData.fy2324 = { billing: 50, growth: 50, growthPercent: 50 };
+                    quarterData.fy2223 = { billing: 50, growth: 50, growthPercent: 50 };
+                  }
+
+                  return (
+                    <TableRow key={quarter}>
+                      <TableCell sx={{ fontWeight: 500, textAlign: 'center' }}>{quarter}</TableCell>
+                      {["fy2526", "fy2425", "fy2324", "fy2223"].map((fyKey) => (
+                        <React.Fragment key={fyKey}>
+                          <TableCell sx={{ textAlign: 'center' }}>{quarterData[fyKey].billing}</TableCell>
+                          <TableCell sx={{ textAlign: 'center' }}>{quarterData[fyKey].growth}</TableCell>
+                          <TableCell sx={{ textAlign: 'center' }}>{quarterData[fyKey].growthPercent}</TableCell>
+                        </React.Fragment>
+                      ))}
+                    </TableRow>
+                  );
+                })}
+                {/* Total Row */}
+                <TableRow sx={{ backgroundColor: '#f9f9f9' }}>
+                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Total</TableCell>
+                  {Array(4 * 3).fill(0).map((_, idx) => (
+                    <TableCell key={idx} sx={{ fontWeight: 'bold', textAlign: 'center' }}>0</TableCell>
+                  ))}
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
           {/* Booking Details Section */}
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-              BookingDetails 
-              <span style={{ marginLeft: '8px', transform: 'rotate(180deg)' }}>^</span>
-            </Typography>
-            {/* This section would be collapsible in a real implementation */}
-          </Box>
         </Box>
       </TabPanel>
     </Box>
   );
 };
-
-export default PerformanceMisEdit;
+export default PerformanceMisTable;

@@ -68,10 +68,6 @@ export default function Order() {
         <Typography color="text.primary">Funnel Tracker</Typography>
       </Breadcrumbs>
 
-      {/* Title */}
-      
-
-      {/* Dynamic Table with "+ Create Order" button positioned after Status */}
       <DynamicTable
         columns={orderColumns}
         data={orderRows}
@@ -95,7 +91,6 @@ export default function Order() {
             "&:hover": { background: "#ea580c" },
           },
         }}
-        // Don't disable Add — so it renders after Status dropdown
       />
     </Box>
   );

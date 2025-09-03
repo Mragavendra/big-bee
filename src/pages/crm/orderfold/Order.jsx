@@ -13,7 +13,6 @@ const orderColumns = [
   { id: "cse", label: "CSE", minWidth: 120 },
   { id: "orderValue", label: "Order Value", minWidth: 120 },
 ];
-
 // Sample data (must have `id`, `status`, and `category`)
 const orderRows = [
   {

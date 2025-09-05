@@ -237,7 +237,7 @@ const Sidebar = () => {
             <List dense disablePadding>
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={() => navigate("/logout")}
+                  onClick={() => handleNavigation("/")}
                   sx={{
                     px: 3,
                     py: 1,
@@ -373,7 +373,7 @@ const Sidebar = () => {
 
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={() => navigate("/logout")}
+                  onClick={() => handleNavigation("/")}
                   sx={{
                     transition: "all 0.25s ease",
                     "&:hover": {

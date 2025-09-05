@@ -1,5 +1,3 @@
-// src/App.jsx
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './layouts/Layout';
@@ -73,20 +71,19 @@ import MarketingChannelTable from './pages/settings/marketingchannel/MarketingCh
 import MarketingChannelAdd from './pages/settings/marketingchannel/MarketingChannelAdd';
 import MarketingChannelEdit from './pages/settings/marketingchannel/MarketingChannelEdit';
 
-// New Login and Signup imports (create under src/auth/)
-import Login from './auth/Login';
-import Signup from './auth/Signup';
+// New Login and Signup imports
+import Login from './logins/Login.jsx';
+import Signup from './logins/Signup.jsx';
 
 function App() {
   return (
     <Layout>
       <Routes>
         {/* Authentication Routes */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
         {/* Existing routes */}
-        <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/lead-capture" element={<LeadCapture />} />
         <Route path="/lead-capture/add" element={<AddLeadsFormLayout />} />

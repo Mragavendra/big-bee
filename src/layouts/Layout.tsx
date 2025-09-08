@@ -31,9 +31,9 @@ const drawerWidth = 280;
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: 'white', 
+  backgroundColor: 'white',
   '&:hover': {
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
@@ -75,7 +75,6 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -93,15 +92,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setOpen(false);
   };
 
-  // Conditionally show sidebar and adjust layout based on route
-  const showSidebar = location.pathname !== '/' && location.pathname !== '/signup';
-  const appBarTitle = location.pathname === '/' || location.pathname === '/signup' ? 'Login' : 'Dashboard';
+  // Check if the current route is login or signup
+  const isAuthRoute = location.pathname === '/' || location.pathname === '/signup';
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      {showSidebar && (
+    <Box sx={{ display: 'flex', width: '100%' }}>
+      <CssBaseline />
+      {!isAuthRoute && (
         <>
-          <CssBaseline />
           <AppBar
             position="fixed"
             sx={{
@@ -123,7 +121,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <MenuIcon />
               </IconButton>
               <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                {appBarTitle}
+                Dashboard
               </Typography>
               <Typography variant="body2" sx={{ mr: 2, color: 'text.secondary' }}>
                 Hello, welcome back!
@@ -219,256 +217,244 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: showSidebar ? 3 : 0,
-          width: showSidebar ? { sm: `calc(100% - ${drawerWidth}px)` } : { sm: '100%' },
-          height: '100%',
-          overflow: 'hidden', // Prevent external scrolling
-          backgroundColor: showSidebar ? '#F9F5EF' : 'white',
+          p: isAuthRoute ? 0 : 3,
+          width: '100%', // Full width for all cases
+          minHeight: '100vh',
+          backgroundColor: isAuthRoute ? '#fff' : '#F9F5EF',
+          display: isAuthRoute ? 'flex' : 'block', // Flex for centering login, block for others
+          justifyContent: isAuthRoute ? 'center' : 'flex-start',
+          alignItems: isAuthRoute ? 'center' : 'stretch',
+          overflow: 'hidden', // Prevent scrollbars
         }}
       >
-        <Box sx={{ height: '100%', overflow: 'hidden' }}>{children}</Box> {/* Remove internal auto scroll unless needed */}
+        {!isAuthRoute && <Toolbar />} {/* Offset for AppBar only on non-auth routes */}
+        {children}
       </Box>
 
-      {/* Notification modal dialog */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <span>Notifications</span>
-              <Chip 
-                label="5 New" 
-                color="error" 
-                size="small" 
-                variant="filled"
-              />
+      {!isAuthRoute && (
+        <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+          <DialogTitle>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span>Notifications</span>
+                <Chip
+                  label="5 New"
+                  color="error"
+                  size="small"
+                  variant="filled"
+                />
+              </div>
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => console.log('Mark all as read')}
+                className="text-blue-600 hover:text-blue-800"
+              >
+                Mark all as read
+              </Button>
             </div>
-            <Button 
-              variant="text" 
-              size="small"
-              onClick={() => console.log('Mark all as read')}
-              className="text-blue-600 hover:text-blue-800"
+          </DialogTitle>
+
+          <DialogContent className="p-0">
+            <div className="max-h-96 overflow-y-auto">
+              {/* High Priority Notifications */}
+              <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <Typography variant="subtitle2" className="font-semibold text-red-700">
+                        System Alert
+                      </Typography>
+                      <Typography variant="caption" className="text-gray-500">
+                        2 min ago
+                      </Typography>
+                    </div>
+                    <Typography variant="body2" className="text-gray-700 mt-1">
+                      Server maintenance scheduled for tonight at 11:00 PM. Expected downtime: 30 minutes.
+                    </Typography>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Chip label="Critical" color="error" size="small" variant="outlined" />
+                      <Typography variant="caption" className="text-gray-500">
+                        IT Department
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Event Notifications */}
+              <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <Typography variant="subtitle2" className="font-semibold text-blue-700">
+                        Event Reminder
+                      </Typography>
+                      <Typography variant="caption" className="text-gray-500">
+                        15 min ago
+                      </Typography>
+                    </div>
+                    <Typography variant="body2" className="text-gray-700 mt-1">
+                      "Annual Tech Conference 2025" starts in 2 hours. Don't forget to check-in at the venue.
+                    </Typography>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Chip label="Event" color="primary" size="small" variant="outlined" />
+                      <Typography variant="caption" className="text-gray-500">
+                        Event Management
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* KRA/Performance Notifications */}
+              <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <Typography variant="subtitle2" className="font-semibold text-orange-700">
+                        KRA Review Pending
+                      </Typography>
+                      <Typography variant="caption" className="text-gray-500">
+                        1 hour ago
+                      </Typography>
+                    </div>
+                    <Typography variant="body2" className="text-gray-700 mt-1">
+                      Your manager has requested review for July 2025 KRA. Please complete the self-assessment.
+                    </Typography>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Chip label="Action Required" color="warning" size="small" variant="outlined" />
+                      <Typography variant="caption" className="text-gray-500">
+                        Priya Menon
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Approval Notifications */}
+              <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <Typography variant="subtitle2" className="font-semibold text-green-700">
+                        Request Approved
+                      </Typography>
+                      <Typography variant="caption" className="text-gray-500">
+                        2 hours ago
+                      </Typography>
+                    </div>
+                    <Typography variant="body2" className="text-gray-700 mt-1">
+                      Your leave request for March 20-22, 2025 has been approved by your manager.
+                    </Typography>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Chip label="Approved" color="success" size="small" variant="outlined" />
+                      <Typography variant="caption" className="text-gray-500">
+                        HR Department
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Team Notifications */}
+              <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <Typography variant="subtitle2" className="font-semibold text-purple-700">
+                        Team Update
+                      </Typography>
+                      <Typography variant="caption" className="text-gray-500">
+                        3 hours ago
+                      </Typography>
+                    </div>
+                    <Typography variant="body2" className="text-gray-700 mt-1">
+                      New team member Sarah Johnson has joined the Project Management department.
+                    </Typography>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Chip label="Team" color="secondary" size="small" variant="outlined" />
+                      <Typography variant="caption" className="text-gray-500">
+                        Team Lead
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Read Notifications */}
+              <div className="p-4 border-b hover:bg-gray-50 cursor-pointer opacity-60">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-gray-300 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <Typography variant="subtitle2" className="font-medium text-gray-600">
+                        System Update
+                      </Typography>
+                      <Typography variant="caption" className="text-gray-400">
+                        1 day ago
+                      </Typography>
+                    </div>
+                    <Typography variant="body2" className="text-gray-600 mt-1">
+                      New features have been added to the dashboard. Check out the updated interface.
+                    </Typography>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Chip label="Info" color="default" size="small" variant="outlined" />
+                      <Typography variant="caption" className="text-gray-400">
+                        Product Team
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Birthday/Anniversary Notifications */}
+              <div className="p-4 border-b hover:bg-gray-50 cursor-pointer opacity-60">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-gray-300 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <Typography variant="subtitle2" className="font-medium text-gray-600">
+                        Birthday Reminder
+                      </Typography>
+                      <Typography variant="caption" className="text-gray-400">
+                        1 day ago
+                      </Typography>
+                    </div>
+                    <Typography variant="body2" className="text-gray-600 mt-1">
+                      It's Alex Thompson's birthday today! Don't forget to wish them.
+                    </Typography>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Chip label="Personal" color="default" size="small" variant="outlined" />
+                      <Typography variant="caption" className="text-gray-400">
+                        HR Department
+                      </Typography>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+
+          <DialogActions className="px-4 pb-4 pt-2 border-t bg-gray-50">
+            <Button
+              variant="text"
+              onClick={() => console.log('View all notifications')}
+              className="text-blue-600"
             >
-              Mark all as read
+              View All Notifications
             </Button>
-          </div>
-        </DialogTitle>
-        
-        <DialogContent className="p-0">
-          <div className="max-h-96 overflow-y-auto">
-            {/* High Priority Notifications */}
-            <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <Typography variant="subtitle2" className="font-semibold text-red-700">
-                      System Alert
-                    </Typography>
-                    <Typography variant="caption" className="text-gray-500">
-                      2 min ago
-                    </Typography>
-                  </div>
-                  <Typography variant="body2" className="text-gray-700 mt-1">
-                    Server maintenance scheduled for tonight at 11:00 PM. Expected downtime: 30 minutes.
-                  </Typography>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Chip label="Critical" color="error" size="small" variant="outlined" />
-                    <Typography variant="caption" className="text-gray-500">
-                      IT Department
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Event Notifications */}
-            <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <Typography variant="subtitle2" className="font-semibold text-blue-700">
-                      Event Reminder
-                    </Typography>
-                    <Typography variant="caption" className="text-gray-500">
-                      15 min ago
-                    </Typography>
-                  </div>
-                  <Typography variant="body2" className="text-gray-700 mt-1">
-                    "Annual Tech Conference 2025" starts in 2 hours. Don't forget to check-in at the venue.
-                  </Typography>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Chip label="Event" color="primary" size="small" variant="outlined" />
-                    <Typography variant="caption" className="text-gray-500">
-                      Event Management
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* KRA/Performance Notifications */}
-            <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <Typography variant="subtitle2" className="font-semibold text-orange-700">
-                      KRA Review Pending
-                    </Typography>
-                    <Typography variant="caption" className="text-gray-500">
-                      1 hour ago
-                    </Typography>
-                  </div>
-                  <Typography variant="body2" className="text-gray-700 mt-1">
-                    Your manager has requested review for July 2025 KRA. Please complete the self-assessment.
-                  </Typography>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Chip label="Action Required" color="warning" size="small" variant="outlined" />
-                    <Typography variant="caption" className="text-gray-500">
-                      Priya Menon
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Approval Notifications */}
-            <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <Typography variant="subtitle2" className="font-semibold text-green-700">
-                      Request Approved
-                    </Typography>
-                    <Typography variant="caption" className="text-gray-500">
-                      2 hours ago
-                    </Typography>
-                  </div>
-                  <Typography variant="body2" className="text-gray-700 mt-1">
-                    Your leave request for March 20-22, 2025 has been approved by your manager.
-                  </Typography>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Chip label="Approved" color="success" size="small" variant="outlined" />
-                    <Typography variant="caption" className="text-gray-500">
-                      HR Department
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Team Notifications */}
-            <div className="p-4 border-b hover:bg-gray-50 cursor-pointer">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <Typography variant="subtitle2" className="font-semibold text-purple-700">
-                      Team Update
-                    </Typography>
-                    <Typography variant="caption" className="text-gray-500">
-                      3 hours ago
-                    </Typography>
-                  </div>
-                  <Typography variant="body2" className="text-gray-700 mt-1">
-                    New team member Sarah Johnson has joined the Project Management department.
-                  </Typography>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Chip label="Team" color="secondary" size="small" variant="outlined" />
-                    <Typography variant="caption" className="text-gray-500">
-                      Team Lead
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Read Notifications */}
-            <div className="p-4 border-b hover:bg-gray-50 cursor-pointer opacity-60">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-300 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <Typography variant="subtitle2" className="font-medium text-gray-600">
-                      System Update
-                    </Typography>
-                    <Typography variant="caption" className="text-gray-400">
-                      1 day ago
-                    </Typography>
-                  </div>
-                  <Typography variant="body2" className="text-gray-600 mt-1">
-                    New features have been added to the dashboard. Check out the updated interface.
-                  </Typography>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Chip label="Info" color="default" size="small" variant="outlined" />
-                    <Typography variant="caption" className="text-gray-400">
-                      Product Team
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Birthday/Anniversary Notifications */}
-            <div className="p-4 border-b hover:bg-gray-50 cursor-pointer opacity-60">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-gray-300 rounded-full mt-2 flex-shrink-0"></div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <Typography variant="subtitle2" className="font-medium text-gray-600">
-                      Birthday Reminder
-                    </Typography>
-                    <Typography variant="caption" className="text-gray-400">
-                      1 day ago
-                    </Typography>
-                  </div>
-                  <Typography variant="body2" className="text-gray-600 mt-1">
-                    It's Alex Thompson's birthday today! Don't forget to wish them.
-                  </Typography>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Chip label="Personal" color="default" size="small" variant="outlined" />
-                    <Typography variant="caption" className="text-gray-400">
-                      HR Department
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Empty state if no notifications */}
-          {/* Uncomment this and comment above notifications if you want empty state
-          <div className="p-8 text-center">
-            <div className="text-gray-400 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-5 5v-5zM9 14h6m-6-4h6m-6-4h6M6 4h12a2 2 0 012 2v10a2 2 0 01-2 2H8l-4 4V6a2 2 0 012-2z" />
-              </svg>
-            </div>
-            <Typography variant="h6" className="text-gray-500 mb-2">
-              No New Notifications
-            </Typography>
-            <Typography variant="body2" className="text-gray-400">
-              You're all caught up! Check back later for updates.
-            </Typography>
-          </div>
-          */}
-        </DialogContent>
-        
-        <DialogActions className="px-4 pb-4 pt-2 border-t bg-gray-50">
-          <Button 
-            variant="text" 
-            onClick={() => console.log('View all notifications')}
-            className="text-blue-600"
-          >
-            View All Notifications
-          </Button>
-          <Button onClick={handleClose} variant="contained">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+            <Button onClick={handleClose} variant="contained">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Box>
   );
 };

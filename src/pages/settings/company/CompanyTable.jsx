@@ -1,58 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
+import axios from 'axios';
 
 const CompanyTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [data, setData] = useState([]);
 
   const columns = [
     { id: 'siNo', label: 'SINo' },
     { id: 'company', label: 'Company' },
     { id: 'description', label: 'Description' },
     { id: 'status', label: 'Status' },
-
   ];
 
-  const data = [
-    {
-      id: '1',
-      siNo: '01',
-      company: 'Bigbee Experience',
-      description: '-',
-      status: '✅',
-      category: 'Experience' 
-    },
-    {
-      id: '2',
-      siNo: '02',
-      company: 'Kajja Communication',
-      description: '-',
-      status: '✅',
-      category: 'Communication' 
-    },
-    {
-      id: '3',
-      siNo: '03',
-      company: 'Giftbees',
-      description: '-',
-      status: '✅',
-      category: 'Gifts' 
-    },
-  ];
-
-  const handleEdit = (row) => {
-    navigate(`${location.pathname}/edit/${row.id}`);
+  const fetchCompanies = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/company');
+      // Map API response to match your table structure
+      const tableData = response.data.map((item, index) => ({
+        id: item.id,
+        siNo: index + 1,
+        company: item.company_name,
+        description: item.description || '-',
+        status: item.is_active ? '✅' : '❌',
+        category: item.category || 'General' // optional field
+      }));
+      setData(tableData);
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+    }
   };
 
-  const handleDelete = (row) => {
-    console.log('Deleting:', row.id);
-  };
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
 
   const headerButtons = [
     {
@@ -102,7 +87,7 @@ const CompanyTable = () => {
       categoryField="category" 
       statusLabel="All Status"
       statusField="status" 
-      disableEdit={false} // Changed to false to enable edit
+      disableEdit={false} 
       disableDelete={false}
       disableView={true}
     />

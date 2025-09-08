@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const MarketingChannelAdd = () => {
   const [isActive, setIsActive] = useState(true);
   const [channelData, setChannelData] = useState({
-    channel: '',
-    advertisingType: '',
+    channel_name: '',
+    advertising_type: '',
     description: ''
   });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
 
   // Sample advertising types for the dropdown
@@ -27,6 +35,29 @@ const MarketingChannelAdd = () => {
     }));
   };
 
+  // 🔹 POST API call
+  const handleSave = async () => {
+    try {
+      const payload = {
+        channel_name: channelData.channel_name,
+        advertising_type: channelData.advertising_type,
+        description: channelData.description,
+        is_active: isActive
+      };
+
+      await axios.post("http://localhost:5000/api/marketing-channels/create", payload);
+
+      setSnackbarOpen(true);
+
+      // Redirect after short delay so user sees snackbar
+      setTimeout(() => {
+        navigate("/settings/marketing-channel");
+      }, 2000);
+    } catch (error) {
+      console.error("❌ Error creating marketing channel:", error);
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="mx-auto">
@@ -40,7 +71,10 @@ const MarketingChannelAdd = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button 
+              onClick={handleSave}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Save
             </button>
           </div>
@@ -56,8 +90,8 @@ const MarketingChannelAdd = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Marketing Channel</label>
                 <input 
                   type="text" 
-                  name="channel"
-                  value={channelData.channel}
+                  name="channel_name"
+                  value={channelData.channel_name}
                   onChange={handleInputChange}
                   placeholder="Enter Marketing Channel"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
@@ -67,8 +101,8 @@ const MarketingChannelAdd = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Type of Advertising</label>
                 <select
-                  name="advertisingType"
-                  value={channelData.advertisingType}
+                  name="advertising_type"
+                  value={channelData.advertising_type}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
                 >
@@ -116,6 +150,17 @@ const MarketingChannelAdd = () => {
             </div>
           </div>
         </div>
+
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={2000}
+          onClose={() => setSnackbarOpen(false)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert severity="success" sx={{ backgroundColor: "green", color: "white" }}>
+            Marketing Channel added successfully!
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );

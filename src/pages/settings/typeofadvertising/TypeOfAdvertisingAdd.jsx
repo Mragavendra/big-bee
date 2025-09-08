@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const TypeOfAdvertisingAdd = () => {
   const [isActive, setIsActive] = useState(true);
   const [advertisingData, setAdvertisingData] = useState({
     channel: '',
     description: ''
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
   });
   const navigate = useNavigate();
 
@@ -15,6 +22,39 @@ const TypeOfAdvertisingAdd = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  // Save API call
+  const handleSave = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/type-of-advertising/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          channel: advertisingData.channel,
+          description: advertisingData.description,
+          is_active: isActive
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to save");
+
+      setSnackbar({
+        open: true,
+        message: "Type of Advertising created successfully!",
+        severity: "success"
+      });
+
+      setTimeout(() => {
+        navigate("/settings/type-of-advertising");
+      }, 1500);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Error creating Type of Advertising",
+        severity: "error"
+      });
+    }
   };
 
   return (
@@ -30,7 +70,10 @@ const TypeOfAdvertisingAdd = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button 
+              onClick={handleSave}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Save
             </button>
           </div>
@@ -92,6 +135,23 @@ const TypeOfAdvertisingAdd = () => {
           </div>
         </div>
       </div>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <MuiAlert 
+          elevation={6} 
+          variant="filled" 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+        >
+          {snackbar.message}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };

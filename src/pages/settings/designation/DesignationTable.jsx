@@ -1,59 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import AddIcon from '@mui/icons-material/Add';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import axios from 'axios';
 
 const DesignationTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [data, setData] = useState([]);
 
   const columns = [
     { id: 'slNo', label: 'Sl No', width: 80 },
-    { id: 'designation', label: 'Designation', width: 200 },
-    { id: 'level', label: 'Level', width: 80 },
+    { id: 'name', label: 'Designation Name', width: 200 },
+    { id: 'level', label: 'Level', width: 150 },
     { id: 'description', label: 'Description', width: 300 },
+    { id: 'is_active', label: 'Status', width: 100 },
   ];
 
-  const data = [
-    {
-      id: '1',
-      slNo: '01',
-      designation: 'Department Head',
-      level: '1',
-      description: 'Top-level lead of a department',
-      status: 'Active',
-      category: 'Management',
-    },
-    {
-      id: '2',
-      slNo: '02',
-      designation: 'Manager',
-      level: '2',
-      description: 'Oversees a team, reports to Dept. Head',
-      status: 'Active',
-      category: 'Management',
-    },
-    {
-      id: '3',
-      slNo: '03',
-      designation: 'Executive',
-      level: '3',
-      description: 'Operational staff, reports to Manager',
-      status: 'Active',
-      category: 'Operations',
-    },
-    {
-      id: '4',
-      slNo: '04',
-      designation: 'Co ordinator',
-      level: '3',
-      description: 'Supports execution and team coordination tasks',
-      status: 'Active',
-      category: 'Operations',
-    },
-  ];
+  // Fetch data from backend
+  const fetchDesignations = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/designations');
+      // Format data with serial numbers and status label
+      const formattedData = response.data.data.map((item, index) => ({
+        ...item,
+        slNo: index + 1,
+        is_active: item.is_active ? 'Active' : 'Inactive',
+      }));
+      setData(formattedData);
+    } catch (error) {
+      console.error('Error fetching designations:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDesignations();
+  }, []);
 
   const headerButtons = [
     {
@@ -78,18 +61,15 @@ const DesignationTable = () => {
     { value: 'Operations', label: 'Operations' },
   ];
 
-  const renderStatus = () => (
-    <ChatBubbleOutlineIcon 
-      sx={{ 
-        color: '#9e9e9e',
-        verticalAlign: 'middle' 
-      }} 
-    />
+  const renderStatus = (status) => (
+    <span style={{ color: status === 'Active' ? '#28a745' : '#dc3545' }}>
+      {status}
+    </span>
   );
 
   return (
     <DynamicTable
-      title="Designation"
+      title="Designations"
       subtitle="CRM / Customer Orders"
       columns={columns}
       data={data}
@@ -106,14 +86,14 @@ const DesignationTable = () => {
         } 
       }}
       searchPlaceholder="Search designation"
-      statusLabel="All Status"
+      statusLabel="Status"
       categoryLabel="All Category"
       categoryField="category"
       categoryOptions={categoryOptions}
       disableEdit={false}
       disableDelete={false}
       disableView={true}
-      statusField="status"
+      statusField="is_active"
       statusRender={renderStatus}
       showLegend={false}
     />

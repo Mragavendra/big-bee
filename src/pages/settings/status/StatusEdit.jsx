@@ -1,22 +1,61 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const StatusEdit = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // get status id from route param
   const [isActive, setIsActive] = useState(true);
-
-  // Pre-filled data for editing
   const [statusData, setStatusData] = useState({
-    status: 'Qualified Lead',
-    description: 'Lead has been qualified and ready for sales engagement'
+    status_name: '',
+    description: ''
   });
+
+  // Snackbar state
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  // Fetch single status on mount
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/status/${id}`);
+        setStatusData({
+          status_name: res.data.status_name,
+          description: res.data.description
+        });
+        setIsActive(res.data.is_active);
+      } catch (err) {
+        console.error('Error fetching status:', err);
+      }
+    };
+    fetchStatus();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setStatusData(prev => ({
+    setStatusData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/status/${id}`, {
+        ...statusData,
+        is_active: isActive,
+      });
+      setOpenSnackbar(true);
+      setTimeout(() => navigate('/settings/status'), 1500);
+    } catch (err) {
+      console.error('Error updating status:', err);
+    }
   };
 
   return (
@@ -32,7 +71,10 @@ const StatusEdit = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button
+              onClick={handleUpdate}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Update
             </button>
           </div>
@@ -41,23 +83,29 @@ const StatusEdit = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Status Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Status Details</h2>
-            
+            <h2 className="text-lg font-medium text-gray-900 mb-6">
+              Status Details
+            </h2>
+
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status Name</label>
-                <input 
-                  type="text" 
-                  name="status"
-                  value={statusData.status}
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Status Name
+                </label>
+                <input
+                  type="text"
+                  name="status_name"
+                  value={statusData.status_name}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea 
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
                   name="description"
                   value={statusData.description}
                   onChange={handleInputChange}
@@ -71,18 +119,34 @@ const StatusEdit = () => {
           {/* Right Column - Control */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Control:</h2>
-            
+
             <div className="flex items-center">
-              <label className="text-sm font-medium text-gray-700 mr-4">Active Status*</label>
-              <div 
-                className={`relative inline-flex h-8 w-14 items-center rounded-full cursor-pointer transition-colors ${isActive ? 'bg-orange-500' : 'bg-gray-200'}`}
+              <label className="text-sm font-medium text-gray-700 mr-4">
+                Active Status*
+              </label>
+              <div
+                className={`relative inline-flex h-8 w-14 items-center rounded-full cursor-pointer transition-colors ${
+                  isActive ? 'bg-orange-500' : 'bg-gray-200'
+                }`}
                 onClick={() => setIsActive(!isActive)}
               >
-                <div className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-7' : 'translate-x-1'} shadow-sm`}>
+                <div
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                    isActive ? 'translate-x-7' : 'translate-x-1'
+                  } shadow-sm`}
+                >
                   {isActive && (
                     <div className="flex items-center justify-center h-full">
-                      <svg className="h-3 w-3 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      <svg
+                        className="h-3 w-3 text-orange-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                   )}
@@ -92,6 +156,18 @@ const StatusEdit = () => {
           </div>
         </div>
       </div>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%', backgroundColor: 'green', color: 'white' }}>
+          Status updated successfully!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

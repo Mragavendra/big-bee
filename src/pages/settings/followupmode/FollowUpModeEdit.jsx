@@ -1,22 +1,59 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { Snackbar, Alert } from '@mui/material';
 
 const FollowUpModeEdit = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // Get the ID from the URL
   const [isActive, setIsActive] = useState(true);
+  const [modeData, setModeData] = useState({ mode: '', description: '' });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-  // Pre-filled data for editing
-  const [modeData, setModeData] = useState({
-    mode: 'Email Followup',
-    description: 'Standard email follow-up sequence for leads'
-  });
+  // Fetch data by ID
+  const fetchMode = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/followup-modes/${id}`);
+      const data = response.data;
+      setModeData({
+        mode: data.mode_name,
+        description: data.description
+      });
+      setIsActive(data.is_active);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.message || 'Failed to fetch follow-up mode',
+        severity: 'error'
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchMode();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setModeData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setModeData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/followup-modes/${id}`, {
+        mode_name: modeData.mode,
+        description: modeData.description,
+        is_active: isActive
+      });
+      setSnackbar({ open: true, message: 'FollowUp Mode updated successfully!', severity: 'success' });
+      setTimeout(() => navigate('/settings/follow-up-mode'), 1000);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.message || 'Update failed',
+        severity: 'error'
+      });
+    }
   };
 
   return (
@@ -32,7 +69,10 @@ const FollowUpModeEdit = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button
+              onClick={handleUpdate}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Update
             </button>
           </div>
@@ -42,7 +82,6 @@ const FollowUpModeEdit = () => {
           {/* Left Column - Mode Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Mode Details</h2>
-            
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Followup Mode</label>
@@ -54,7 +93,6 @@ const FollowUpModeEdit = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea 
@@ -71,7 +109,6 @@ const FollowUpModeEdit = () => {
           {/* Right Column - Control */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Control:</h2>
-            
             <div className="flex items-center">
               <label className="text-sm font-medium text-gray-700 mr-4">Active Status*</label>
               <div 
@@ -92,6 +129,17 @@ const FollowUpModeEdit = () => {
           </div>
         </div>
       </div>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert severity={snackbar.severity} variant="filled">
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

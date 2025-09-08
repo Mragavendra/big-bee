@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
 import AddIcon from '@mui/icons-material/Add';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import axios from 'axios';
 
 const CategoryTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const columns = [
     { id: 'sNo', label: 'SI No' },
@@ -15,51 +19,32 @@ const CategoryTable = () => {
     { id: 'status', label: 'Status' },
   ];
 
-  const data = [
-    {
-      id: '1',
-      sNo: '01',
-      category: 'Enquiry',
-      description: 'Lead is newly contacted and initial conversation has begun.',
-      status: ' Active',
-    },
-    {
-      id: '2',
-      sNo: '02',
-      category: 'Pipeline',
-      description: 'Lead is actively engaged and moving through sales stages (meeting, proposal, negotiation).',
-      status: ' Active',
-    },
-    {
-      id: '3',
-      sNo: '03',
-      category: 'Hold',
-      description: 'Lead has shown interest but is temporarily paused due to client-side delays.',
-      status: 'Active',
-    },
-    {
-      id: '4',
-      sNo: '04',
-      category: 'Lost Enquiry',
-      description: 'Lead dropped without progressing — no meaningful interaction or response.',
-      status: 'Active',
-    },
-    {
-      id: '5',
-      sNo: '05',
-      category: 'Lost Pipeline',
-      description: 'Lead dropped after active engagement — proposal rejected or client chose another vendor.',
-      status: ' Active',
-    },
-    {
-      id: '6',
-      sNo: '06',
-      category: 'Order',
-      description: 'Lead successfully converted and event order is confirmed.',
-      status: 'Active',
-      
-    },
-  ];
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/categories/');
+        if (res.data.success && Array.isArray(res.data.data)) {
+          const formattedData = res.data.data.map((item, index) => ({
+            id: item.id,
+            sNo: (index + 1).toString().padStart(2, '0'),
+            category: item.funnel_stage,
+            description: item.description,
+            status: item.is_active ? 'Active' : 'Inactive',
+          }));
+          setData(formattedData);
+        } else {
+          console.error('Unexpected API response:', res.data);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const headerButtons = [
     {
@@ -68,18 +53,18 @@ const CategoryTable = () => {
       size: 'small',
       startIcon: <UploadFileIcon />,
       onClick: () => navigate(`${location.pathname}/bulk-upload`),
-      props: { 
-        sx: { 
+      props: {
+        sx: {
           textTransform: 'none',
           borderColor: '#3b82f6',
           color: '#3b82f6',
           '&:hover': {
             backgroundColor: 'rgba(59, 130, 246, 0.04)',
-            borderColor: '#3b82f6'
-          }
-        } 
+            borderColor: '#3b82f6',
+          },
+        },
       },
-    }
+    },
   ];
 
   return (
@@ -87,22 +72,22 @@ const CategoryTable = () => {
       title="Category"
       subtitle="CRM / Customer Orders"
       columns={columns}
-      data={data}
+      data={loading ? [] : data}
       rowsPerPage={10}
       headerButtons={headerButtons}
-      addButtonLabel="Add Funnel Stage"
-      addButtonProps={{ 
+      addButtonLabel="Add Category"
+      addButtonProps={{
         variant: 'contained',
         color: 'primary',
-        size: 'mediumI. ', 
+        size: 'medium',
         startIcon: <AddIcon />,
-        sx: { 
+        sx: {
           textTransform: 'none',
           backgroundColor: '#F76829',
           '&:hover': {
-            backgroundColor: '#2563eb'
-          }
-        } 
+            backgroundColor: '#2563eb',
+          },
+        },
       }}
       searchPlaceholder="Search for item"
       categoryLabel="All Category"

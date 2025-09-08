@@ -2,8 +2,35 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ActionAdd = () => {
+  const [actionName, setActionName] = useState("");
+  const [description, setDescription] = useState("");
   const [isActive, setIsActive] = useState(true);
   const navigate = useNavigate();
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/actions/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action_name: actionName,
+          description: description,
+          is_active: isActive,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Funnel Status added successfully!");
+        navigate("/settings/action"); // Redirect back to action list
+      } else {
+        alert(data.message || "Something went wrong!");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to save Funnel Status!");
+    }
+  };
 
   return (
     <div className="p-6">
@@ -18,7 +45,10 @@ const ActionAdd = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button 
+              onClick={handleSave}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Save
             </button>
           </div>
@@ -34,17 +64,21 @@ const ActionAdd = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Funnel Status</label>
                 <input 
                   type="text" 
+                  value={actionName}
+                  onChange={(e) => setActionName(e.target.value)}
                   placeholder="Enter Funnel Stage"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-400 placeholder-gray-400"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea 
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter Description"
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-400 placeholder-gray-400 resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400 resize-none"
                 />
               </div>
             </div>

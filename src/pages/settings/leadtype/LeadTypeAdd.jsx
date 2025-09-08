@@ -1,9 +1,41 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LeadTypeAdd = () => {
+  const [leadType, setLeadType] = useState('');
+  const [description, setDescription] = useState('');
   const [isActive, setIsActive] = useState(true);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+
+  const handleSave = async () => {
+    if (!leadType) {
+      alert('Lead Type is required');
+      return;
+    }
+
+    const data = {
+      lead_type: leadType,
+      description: description,
+      active_status: isActive,
+    };
+
+    try {
+      setLoading(true);
+      const res = await axios.post('http://localhost:5000/api/lead-types/create', data);
+      console.log('Created:', res.data);
+
+      // Navigate back to list page after creation
+      navigate('/settings/lead-type');
+    } catch (err) {
+      console.error('Error creating lead type:', err);
+      alert('Failed to create lead type');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -18,8 +50,12 @@ const LeadTypeAdd = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
-              Save
+            <button 
+              onClick={handleSave}
+              className={`bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>
@@ -35,7 +71,9 @@ const LeadTypeAdd = () => {
                 <input 
                   type="text" 
                   placeholder="Enter Lead Type"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-400 placeholder-gray-400"
+                  value={leadType}
+                  onChange={(e) => setLeadType(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
                 />
               </div>
               
@@ -44,7 +82,9 @@ const LeadTypeAdd = () => {
                 <textarea 
                   placeholder="Enter Description"
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-400 placeholder-gray-400 resize-none"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400 resize-none"
                 />
               </div>
             </div>

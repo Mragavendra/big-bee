@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -7,56 +7,44 @@ import AddIcon from '@mui/icons-material/Add';
 const ActionTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [data, setData] = useState([]);
 
   const columns = [
-    { id: 'sNo', label: 'S1 No' },
-    { id: 'funnelStatus', label: 'Funnel Status' },
+    { id: 'sNo', label: 'Sl No' },
+    { id: 'action_name', label: 'Funnel Status' },
     { id: 'description', label: 'Description' },
-    { id: 'status', label: 'Status' },
+    { id: 'is_active', label: 'Status' },
   ];
 
-  const data = [
-    {
-      id: '1',
-      sNo: '01',
-      funnelStatus: 'First Call',
-      description: 'Inbound examples includes WATI (WhatsApp API), Google Ads, Instagram DMs, Referral, Website Enquiry',
-      status: '💶️',
-      category: 'First Call'
-    },
-    {
-      id: '2',
-      sNo: '02',
-      funnelStatus: 'Meeting Scheduled',
-      description: 'Outbound Example includes Cold Call, LinkedIn Outreach, Walk-in Visit, Database Follow-up, Email Campaign',
-      status: '💶️',
-      category: 'Meeting'
-    },
-    {
-      id: '3',
-      sNo: '03',
-      funnelStatus: 'Proposal Sent',
-      description: 'Outbound Example includes Cold Call, LinkedIn Outreach, Walk-in Visit, Database Follow-up, Email Campaign',
-      status: '💶️',
-      category: 'Proposal'
-    },
-    {
-      id: '4',
-      sNo: '04',
-      funnelStatus: 'Negotiations',
-      description: 'Outbound Example includes Cold Call, LinkedIn Outreach, Walk-in Visit, Database Follow-up, Email Campaign',
-      status: '💶️',
-      category: 'Negotiation'
-    },
-    {
-      id: '5',
-      sNo: '05',
-      funnelStatus: 'Closed',
-      description: 'Outbound Example includes Cold Call, LinkedIn Outreach, Walk-in Visit, Database Follow-up, Email Campaign',
-      status: '💶️',
-      category: 'Closed'
-    },
-  ];
+  // Fetch actions from API
+  useEffect(() => {
+    const fetchActions = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/actions");
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // Transform API data to match table structure
+          const formattedData = result.data.map((item, index) => ({
+            id: item.id,
+            sNo: String(index + 1).padStart(2, "0"),
+            action_name: item.action_name,
+            description: item.description,
+            is_active: item.is_active ? "✅ Active" : "❌ Inactive",
+            category: item.action_name, // for category filter
+            status: item.is_active ? "✅" : "❌", // for status filter
+          }));
+          setData(formattedData);
+        } else {
+          console.error("Failed to fetch actions:", result.message);
+        }
+      } catch (error) {
+        console.error("Error fetching actions:", error);
+      }
+    };
+
+    fetchActions();
+  }, []);
 
   const headerButtons = [
     {

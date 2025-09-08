@@ -1,62 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import axios from 'axios';
 
 const ServicesTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [services, setServices] = useState([]);
+
+  // Fetch services from API
+  const fetchServices = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/services'); // Your GET API endpoint
+      setServices(
+        response.data.map((item, index) => ({
+          id: item.id,
+          serialNo: String(index + 1).padStart(2, '0'),
+          service: item.service_type,
+          description: item.description,
+          status: item.is_active ? 'Active' : 'Inactive',
+          category: item.category || 'General', // optional
+        }))
+      );
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
 
   const columns = [
     { id: 'serialNo', label: 'SINo' },
     { id: 'service', label: 'Services' },
     { id: 'description', label: 'Description' },
-  ];
-
-  const data = [
-    {
-      id: '1',
-      serialNo: '01',
-      service: 'MICE',
-      description: 'Meetings, Incentives, Conferences & Exhibitions management for corporate clients',
-      status: 'Active',
-      category: 'Corporate'
-    },
-    {
-      id: '2',
-      serialNo: '02',
-      service: 'Emp Engagement',
-      description: 'Employee engagement programs including team building and wellness activities',
-      status: 'Active',
-      category: 'HR'
-    },
-    {
-      id: '3',
-      serialNo: '03',
-      service: 'Exhibitions',
-      description: 'End-to-end exhibition management including booth design and logistics',
-      status: 'Active',
-      category: 'Marketing'
-    },
-    {
-      id: '4',
-      serialNo: '04',
-      service: 'Product Launches',
-      description: 'Complete product launch solutions including venue selection and PR',
-      status: 'Active',
-      category: 'Marketing'
-    },
-    {
-      id: '5',
-      serialNo: '05',
-      service: 'Award Ceremonies',
-      description: 'Annual award ceremonies with nominee management and live streaming',
-      status: 'Active',
-      category: 'Corporate'
-    }
   ];
 
   const headerButtons = [
@@ -84,7 +67,7 @@ const ServicesTable = () => {
     <DynamicTable
       title="Services"
       columns={columns}
-      data={data}
+      data={services}
       rowsPerPage={10}
       headerButtons={headerButtons}
       searchPlaceholder="Search for item"
@@ -101,7 +84,7 @@ const ServicesTable = () => {
           render: (row) => (
             <IconButton 
               size="small"
-              onClick={() => console.log('Edit', row.id)}
+              onClick={() => navigate(`${location.pathname}/edit/${row.id}`)}
               sx={{ color: '#1976d2' }}
             >
               <EditIcon fontSize="small" />

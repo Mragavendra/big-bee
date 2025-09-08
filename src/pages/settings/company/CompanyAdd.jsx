@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const CompanyAdd = () => {
   const [isActive, setIsActive] = useState(true);
   const [companyData, setCompanyData] = useState({
-    name: '',
+    company_name: '',
     description: ''
   });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -15,6 +24,37 @@ const CompanyAdd = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const payload = { 
+        company_name: companyData.company_name,
+        description: companyData.description,
+        is_active: isActive
+      };
+
+      const response = await axios.post('http://localhost:5000/api/company/create', payload);
+
+      setSnackbar({
+        open: true,
+        message: 'Company created successfully!',
+        severity: 'success'
+      });
+
+      // Optional: navigate after success
+      setTimeout(() => navigate('/settings/company'), 1000);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.message || 'Failed to create company.',
+        severity: 'error'
+      });
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   return (
@@ -30,7 +70,10 @@ const CompanyAdd = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button 
+              onClick={handleSubmit}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Save
             </button>
           </div>
@@ -40,14 +83,13 @@ const CompanyAdd = () => {
           {/* Left Column - Company Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Company Details</h2>
-            
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
                 <input 
                   type="text" 
-                  name="name"
-                  value={companyData.name}
+                  name="company_name"
+                  value={companyData.company_name}
                   onChange={handleInputChange}
                   placeholder="Enter Company Name"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
@@ -71,7 +113,6 @@ const CompanyAdd = () => {
           {/* Right Column - Control */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Control:</h2>
-            
             <div className="flex items-center">
               <label className="text-sm font-medium text-gray-700 mr-4">Active Status*</label>
               <div 
@@ -92,6 +133,18 @@ const CompanyAdd = () => {
           </div>
         </div>
       </div>
+
+      {/* Snackbar */}
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

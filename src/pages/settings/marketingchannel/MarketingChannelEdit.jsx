@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { Snackbar, Alert } from '@mui/material';
 
 const MarketingChannelEdit = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // get ID from route param
+
   const [isActive, setIsActive] = useState(true);
-  
-  // Pre-filled data for editing
   const [channelData, setChannelData] = useState({
-    channel: 'Facebook Ads',
-    advertisingType: 'Social Media',
-    description: 'Paid advertising campaigns on Facebook platform'
+    channel_name: '',
+    advertising_type: '',
+    description: ''
   });
 
-  // Sample advertising types for the dropdown
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
   const advertisingTypes = [
     'Social Media',
     'Email Marketing',
@@ -21,12 +24,46 @@ const MarketingChannelEdit = () => {
     'Influencer Marketing'
   ];
 
+  // 🔹 Fetch existing data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/marketing-channels/${id}`);
+        setChannelData({
+          channel_name: res.data.channel_name,
+          advertising_type: res.data.advertising_type,
+          description: res.data.description
+        });
+        setIsActive(res.data.is_active);
+      } catch (err) {
+        console.error("Error fetching record:", err);
+        setSnackbar({ open: true, message: 'Failed to fetch data', severity: 'error' });
+      }
+    };
+    fetchData();
+  }, [id]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setChannelData(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  // 🔹 Update API
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/marketing-channels/${id}`, {
+        ...channelData,
+        is_active: isActive
+      });
+      setSnackbar({ open: true, message: 'Marketing Channel updated successfully!', severity: 'success' });
+      setTimeout(() => navigate('/settings/marketing-channel'), 1000); // navigate after 1 sec
+    } catch (err) {
+      console.error("Error updating record:", err);
+      setSnackbar({ open: true, message: 'Failed to update Marketing Channel', severity: 'error' });
+    }
   };
 
   return (
@@ -37,12 +74,15 @@ const MarketingChannelEdit = () => {
           <h1 className="text-2xl font-semibold text-gray-900">Edit Marketing Channel</h1>
           <div className="flex gap-3">
             <button
-              onClick={() => navigate('/settings/employee-master')}
+              onClick={() => navigate('/settings/marketing-channel')}
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-md font-medium"
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button
+              onClick={handleUpdate}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Update
             </button>
           </div>
@@ -52,36 +92,36 @@ const MarketingChannelEdit = () => {
           {/* Left Column - Marketing Channel Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Marketing Channel</h2>
-            
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Marketing Channel</label>
-                <input 
-                  type="text" 
-                  name="channel"
-                  value={channelData.channel}
+                <input
+                  type="text"
+                  name="channel_name"
+                  value={channelData.channel_name}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Type of Advertising</label>
                 <select
-                  name="advertisingType"
-                  value={channelData.advertisingType}
+                  name="advertising_type"
+                  value={channelData.advertising_type}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
                 >
+                  <option value="">Select Advertising Type</option>
                   {advertisingTypes.map((type, index) => (
                     <option key={index} value={type}>{type}</option>
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea 
+                <textarea
                   name="description"
                   value={channelData.description}
                   onChange={handleInputChange}
@@ -95,10 +135,9 @@ const MarketingChannelEdit = () => {
           {/* Right Column - Control */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Control:</h2>
-            
             <div className="flex items-center">
               <label className="text-sm font-medium text-gray-700 mr-4">Active Status*</label>
-              <div 
+              <div
                 className={`relative inline-flex h-7 w-14 items-center rounded-full cursor-pointer transition-colors ${isActive ? 'bg-orange-500' : 'bg-gray-200'}`}
                 onClick={() => setIsActive(!isActive)}
               >
@@ -115,6 +154,18 @@ const MarketingChannelEdit = () => {
             </div>
           </div>
         </div>
+
+        {/* Snackbar */}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={3000}
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert severity={snackbar.severity} sx={{ bgcolor: snackbar.severity === 'success' ? 'green' : 'red' }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );

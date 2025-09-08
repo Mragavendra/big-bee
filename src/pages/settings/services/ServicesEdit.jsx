@@ -1,22 +1,59 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const ServicesEdit = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // Service ID from route
   const [isActive, setIsActive] = useState(true);
-  
-  // Pre-filled data for editing
   const [serviceData, setServiceData] = useState({
-    type: 'Premium Support',
-    description: '24/7 dedicated support with SLA guarantees'
+    type: '',
+    description: ''
   });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+
+  // GET API - fetch service by ID
+  const fetchService = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/services/${id}`);
+      setServiceData({
+        type: response.data.service_type,
+        description: response.data.description
+      });
+      setIsActive(response.data.is_active);
+    } catch (error) {
+      console.error('Error fetching service:', error);
+      setSnackbar({ open: true, message: 'Failed to load service data.', severity: 'error' });
+    }
+  };
+
+  useEffect(() => {
+    fetchService();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setServiceData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setServiceData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // PUT API - update service by ID
+  const handleUpdate = async () => {
+    try {
+      const payload = {
+        service_type: serviceData.type,
+        description: serviceData.description,
+        is_active: isActive
+      };
+      await axios.put(`http://localhost:5000/api/services/${id}`, payload);
+      setSnackbar({ open: true, message: 'Service updated successfully!', severity: 'success' });
+      // Navigate back to services table after success
+      setTimeout(() => navigate('/settings/services'), 1000);
+    } catch (error) {
+      console.error('Error updating service:', error);
+      setSnackbar({ open: true, message: 'Failed to update service.', severity: 'error' });
+    }
   };
 
   return (
@@ -32,7 +69,10 @@ const ServicesEdit = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button
+              onClick={handleUpdate}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Update
             </button>
           </div>
@@ -47,17 +87,17 @@ const ServicesEdit = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Service Type</label>
                 <input 
-                  type="text" 
+                  type="text"
                   name="type"
                   value={serviceData.type}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea 
+                <textarea
                   name="description"
                   value={serviceData.description}
                   onChange={handleInputChange}
@@ -91,6 +131,18 @@ const ServicesEdit = () => {
             </div>
           </div>
         </div>
+
+        {/* Snackbar for feedback */}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert severity={snackbar.severity} sx={{ width: '100%' }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );

@@ -1,12 +1,29 @@
+// src/pages/settings/campaign-type/CampaignTypeAdd.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const CampaignTypeAdd = () => {
   const [isActive, setIsActive] = useState(true);
   const [campaignData, setCampaignData] = useState({
-    type: '',
+    campaign_type: '',
     description: ''
   });
+  const [loading, setLoading] = useState(false);
+
+  // Snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -15,6 +32,46 @@ const CampaignTypeAdd = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleSave = async () => {
+    if (!campaignData.campaign_type) {
+      setSnackbar({
+        open: true,
+        message: "Campaign Type is required!",
+        severity: "error"
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axios.post("http://localhost:5000/api/campaign-types/create", {
+        campaign_type: campaignData.campaign_type,
+        description: campaignData.description,
+        is_active: isActive
+      });
+
+      setSnackbar({
+        open: true,
+        message: "Campaign Type added successfully!",
+        severity: "success"
+      });
+
+      setTimeout(() => {
+        navigate("/settings/campaign-type");
+      }, 1500);
+
+    } catch (error) {
+      console.error("Error saving campaign type:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to save campaign type",
+        severity: "error"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,8 +87,12 @@ const CampaignTypeAdd = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
-              Save
+            <button 
+              onClick={handleSave}
+              disabled={loading}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium disabled:opacity-50"
+            >
+              {loading ? "Saving..." : "Save"}
             </button>
           </div>
         </div>
@@ -46,8 +107,8 @@ const CampaignTypeAdd = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Type</label>
                 <input 
                   type="text" 
-                  name="type"
-                  value={campaignData.type}
+                  name="campaign_type"
+                  value={campaignData.campaign_type}
                   onChange={handleInputChange}
                   placeholder="Enter Campaign Type"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
@@ -91,6 +152,21 @@ const CampaignTypeAdd = () => {
             </div>
           </div>
         </div>
+
+        {/* Snackbar */}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={3000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        >
+          <Alert 
+            onClose={() => setSnackbar({ ...snackbar, open: false })} 
+            severity={snackbar.severity}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );

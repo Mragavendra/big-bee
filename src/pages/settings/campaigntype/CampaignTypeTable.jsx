@@ -1,56 +1,51 @@
-import React from 'react';
+// src/pages/settings/campaign-type/CampaignTypeTable.jsx
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 
 const CampaignTypeTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const columns = [
     { id: 'serialNo', label: 'S1 No' },
-    { id: 'campaignType', label: 'Campaign Type' },
+    { id: 'campaign_type', label: 'Campaign Type' },
     { id: 'description', label: 'Description' },
   ];
 
-  const data = [
-    {
-      id: '1',
-      serialNo: '01',
-      campaignType: 'Festival',
-      description: 'Seasonal festival campaigns and promotions',
-      status: 'Active',
-      category: 'Marketing'
-    },
-    {
-      id: '2',
-      serialNo: '02',
-      campaignType: 'Gifting',
-      description: 'Corporate gifting and loyalty programs',
-      status: 'Active',
-      category: 'Sales'
-    },
-    {
-      id: '3',
-      serialNo: '03',
-      campaignType: 'Lead Generation',
-      description: 'Targeted campaigns for customer acquisition',
-      status: 'Active',
-      category: 'Marketing'
-    },
-    {
-      id: '4',
-      serialNo: '04',
-      campaignType: 'Branding',
-      description: 'Brand awareness and positioning campaigns',
-      status: 'Active',
-      category: 'Brand'
-    },
-  ];
+  // ✅ Fetch API Data
+  useEffect(() => {
+    const fetchCampaignTypes = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/campaign-types');
+        const campaignTypes = response.data.map((item, index) => ({
+          id: item.id,
+          serialNo: (index + 1).toString().padStart(2, '0'),
+          campaign_type: item.campaign_type,
+          description: item.description,
+          status: item.is_active ? 'Active' : 'Inactive',
+          category: 'Marketing' // you can adjust if you add category column
+        }));
+        setData(campaignTypes);
+      } catch (error) {
+        console.error('Error fetching campaign types:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCampaignTypes();
+  }, []);
 
   const headerButtons = [
     {
@@ -87,6 +82,7 @@ const CampaignTypeTable = () => {
       disableView={true}
       statusField="status"
       categoryField="category"
+      loading={loading}
       statusRenderer={(status) => (
         status === 'Active' ? <CheckBoxIcon color="primary" /> : <CheckBoxOutlineBlankIcon color="disabled" />
       )}
@@ -95,7 +91,7 @@ const CampaignTypeTable = () => {
           render: (row) => (
             <IconButton 
               size="small"
-              onClick={() => console.log('Edit', row.id)}
+              onClick={() => navigate(`/settings/campaign-type/edit/${row.id}`)}
               sx={{ color: '#1976d2' }}
             >
               <EditIcon fontSize="small" />

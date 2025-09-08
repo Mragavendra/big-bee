@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const ServicesAdd = () => {
   const [isActive, setIsActive] = useState(true);
@@ -7,6 +14,7 @@ const ServicesAdd = () => {
     type: '',
     description: ''
   });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -15,6 +23,32 @@ const ServicesAdd = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const payload = {
+        service_type: serviceData.type,
+        description: serviceData.description,
+        is_active: isActive
+      };
+      const response = await axios.post('http://localhost:5000/api/services/create', payload);
+      
+      setSnackbar({ open: true, message: 'Service created successfully!', severity: 'success' });
+      console.log('Created Service:', response.data);
+
+      // Navigate after short delay to show snackbar
+      setTimeout(() => {
+        navigate('/settings/services');
+      }, 1000);
+    } catch (error) {
+      console.error('Error creating service:', error);
+      setSnackbar({ open: true, message: 'Failed to create service.', severity: 'error' });
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   return (
@@ -30,7 +64,10 @@ const ServicesAdd = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button 
+              onClick={handleSave}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Save
             </button>
           </div>
@@ -92,6 +129,18 @@ const ServicesAdd = () => {
           </div>
         </div>
       </div>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

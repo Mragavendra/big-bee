@@ -1,69 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { IconButton } from '@mui/material';
 
 const MarketingChannelTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const columns = [
     { id: 'slNo', label: 'Sl No' },
-    { id: 'marketingChannel', label: 'Marketing Channel' },
-    { id: 'advertisingType', label: 'Type of Advertising' },
+    { id: 'channel_name', label: 'Marketing Channel' },
+    { id: 'advertising_type', label: 'Type of Advertising' },
     { id: 'description', label: 'Description' },
   ];
 
-  const data = [
-    {
-      id: '1',
-      slNo: '01',
-      marketingChannel: 'Google Ads',
-      advertisingType: 'Paid Advertising',
-      description: 'Inbound examples includes WATI (WhatsApp API), Google Ads, Instagram DMs, Referral, Website Enquiry',
-      status: 'Active',
-      category: 'Digital'
-    },
-    {
-      id: '2',
-      slNo: '02',
-      marketingChannel: 'Social Media Ads',
-      advertisingType: 'Paid Advertising',
-      description: 'Inbound examples includes WATI (WhatsApp API), Google Ads, Instagram DMs, Referral, Website Enquiry',
-      status: 'Active',
-      category: 'Digital'
-    },
-    {
-      id: '3',
-      slNo: '03',
-      marketingChannel: 'LinkedIn Ads',
-      advertisingType: 'Paid Advertising',
-      description: 'Inbound examples includes WATI (WhatsApp API), Google Ads, Instagram DMs, Referral, Website Enquiry',
-      status: 'Active',
-      category: 'Digital'
-    },
-    {
-      id: '4',
-      slNo: '04',
-      marketingChannel: 'Youtube Ads',
-      advertisingType: 'Paid Advertising',
-      description: 'Inbound examples includes WATI (WhatsApp API), Google Ads, Instagram DMs, Referral, Website Enquiry',
-      status: 'Active',
-      category: 'Digital'
-    },
-    {
-      id: '5',
-      slNo: '05',
-      marketingChannel: 'SEO & Blog Content',
-      advertisingType: 'Organic marketing',
-      description: 'Inbound examples includes WATI (WhatsApp API), Google Ads, Instagram DMs, Referral, Website Enquiry',
-      status: 'Active',
-      category: 'Organic'
-    },
-  ];
+  // 🔹 Fetch data from API
+  const fetchMarketingChannels = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/marketing-channels");
+      const formattedData = response.data.map((item, index) => ({
+        ...item,
+        slNo: index + 1,
+      }));
+      setData(formattedData);
+    } catch (error) {
+      console.error("❌ Error fetching marketing channels:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMarketingChannels();
+  }, []);
 
   const headerButtons = [
     {
@@ -98,10 +75,10 @@ const MarketingChannelTable = () => {
       categoryLabel="All Category"
       statusLabel="All Status"
       disableView={true}
-      statusField="status"
-      categoryField="category"
+      loading={loading}
+      statusField="is_active"
       statusRenderer={(status) => (
-        status === 'Active' ? <CheckBoxIcon color="primary" /> : <CheckBoxIcon color="disabled" />
+        status ? <CheckBoxIcon color="primary" /> : <CheckBoxIcon color="disabled" />
       )}
       actionColumnProps={{
         editButton: {

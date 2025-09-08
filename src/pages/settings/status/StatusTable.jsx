@@ -1,44 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
+import axios from 'axios';
 
 const StatusTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [data, setData] = useState([]);
+
   const columns = [
-    { id: 'siNo', label: 'SINo' },
-    { id: 'services', label: 'Services' },
+    { id: 'id', label: 'ID' },
+    { id: 'status_name', label: 'Status Name' },
     { id: 'description', label: 'Description' },
-    { id: 'status', label: 'Status' },
+    { id: 'is_active', label: 'Active' },
   ];
 
-  // Updated sample data with descriptions
-  const data = [
-    {
-      id: '1',
-      siNo: '01',
-      services: 'Hot',
-      description: 'Urgent requirement, needs immediate follow-up',
-      status: '☺',
-    },
-    {
-      id: '2',
-      siNo: '02',
-      services: 'Warm',
-      description: 'Interested but needs more information',
-      status: '☺',
-    },
-    {
-      id: '3',
-      siNo: '03',
-      services: 'Cold',
-      description: 'Not currently interested, follow up in future',
-      status: '☺',
-    },
-  ];
+  // Fetch data from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/status');
+        setData(res.data); // assuming backend sends array of statuses
+      } catch (err) {
+        console.error('Error fetching status data:', err);
+      }
+    };
+    fetchData();
+  }, []);
 
   const headerButtons = [
     {
@@ -53,22 +44,21 @@ const StatusTable = () => {
 
   return (
     <DynamicTable
-      title="CRM / Customer Orders"
+      title="CRM / Status Management"
       columns={columns}
       data={data}
       rowsPerPage={5}
       headerButtons={headerButtons}
-      addButtonLabel="+ Add FollowUp mode"
+      addButtonLabel="Add Status"
       addButtonProps={{ 
         color: 'warning', 
         size: 'small', 
         sx: { textTransform: 'none' },
         startIcon: <AddIcon /> 
       }}
-      searchPlaceholder="Search for Item"
+      searchPlaceholder="Search for Status"
       categoryLabel="All Category"
       statusLabel="All Status"
-      // keep built-in action columns (edit/delete/view)
       disableEdit={false}
       disableDelete={false}
       disableView={false}

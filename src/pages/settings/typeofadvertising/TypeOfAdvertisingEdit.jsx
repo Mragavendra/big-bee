@@ -1,15 +1,48 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/pages/settings/typeofadvertising/TypeOfAdvertisingEdit.jsx
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const TypeOfAdvertisingEdit = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // get ID from route param
   const [isActive, setIsActive] = useState(true);
-  
-  // Pre-filled data for editing
   const [advertisingData, setAdvertisingData] = useState({
-    channel: 'Social Media Marketing',
-    description: 'Advertising campaigns on social platforms'
+    channel: '',
+    description: ''
   });
+
+  // Snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  // Fetch existing record
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/type-of-advertising/${id}`);
+        setAdvertisingData({
+          channel: res.data.channel,
+          description: res.data.description
+        });
+        setIsActive(res.data.is_active);
+      } catch (err) {
+        console.error("Error fetching record:", err);
+        setSnackbar({
+          open: true,
+          message: 'Failed to load data',
+          severity: 'error'
+        });
+      }
+    };
+    fetchData();
+  }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -17,6 +50,37 @@ const TypeOfAdvertisingEdit = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`http://localhost:5000/api/type-of-advertising/${id}`, {
+        ...advertisingData,
+        is_active: isActive
+      });
+      setSnackbar({
+        open: true,
+        message: 'Type of Advertising updated successfully!',
+        severity: 'success'
+      });
+    } catch (err) {
+      console.error("Error updating record:", err);
+      setSnackbar({
+        open: true,
+        message: 'Error updating record',
+        severity: 'error'
+      });
+    }
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') return;
+    setSnackbar({ ...snackbar, open: false });
+
+    // Navigate only if update was successful
+    if (snackbar.severity === 'success') {
+      navigate('/settings/type-of-advertising');
+    }
   };
 
   return (
@@ -32,7 +96,10 @@ const TypeOfAdvertisingEdit = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button
+              onClick={handleUpdate}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Update
             </button>
           </div>
@@ -42,7 +109,6 @@ const TypeOfAdvertisingEdit = () => {
           {/* Left Column - Advertising Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Type of Advertising</h2>
-            
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Marketing Channel</label>
@@ -54,7 +120,6 @@ const TypeOfAdvertisingEdit = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea 
@@ -71,7 +136,6 @@ const TypeOfAdvertisingEdit = () => {
           {/* Right Column - Control */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium text-gray-900 mb-6">Control:</h2>
-            
             <div className="flex items-center">
               <label className="text-sm font-medium text-gray-700 mr-4">Active Status*</label>
               <div 
@@ -91,6 +155,22 @@ const TypeOfAdvertisingEdit = () => {
             </div>
           </div>
         </div>       
+
+        {/* Snackbar */}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={2000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert 
+            onClose={handleCloseSnackbar} 
+            severity={snackbar.severity} 
+            sx={{ width: '100%' }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );

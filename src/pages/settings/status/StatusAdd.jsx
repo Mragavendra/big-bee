@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const StatusAdd = () => {
   const [isActive, setIsActive] = useState(true);
   const [statusData, setStatusData] = useState({
-    status: '',
+    status_name: '',
     description: ''
   });
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -15,6 +19,31 @@ const StatusAdd = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/status/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status_name: statusData.status_name,
+          description: statusData.description,
+          is_active: isActive
+        })
+      });
+
+      if (response.ok) {
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          navigate("/settings/status");
+        }, 1500);
+      } else {
+        console.error("Failed to save status");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -30,7 +59,10 @@ const StatusAdd = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button 
+              onClick={handleSave}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Save
             </button>
           </div>
@@ -46,8 +78,8 @@ const StatusAdd = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Status Name</label>
                 <input 
                   type="text" 
-                  name="status"
-                  value={statusData.status}
+                  name="status_name"
+                  value={statusData.status_name}
                   onChange={handleInputChange}
                   placeholder="Enter Status Name"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 placeholder-gray-400"
@@ -92,6 +124,18 @@ const StatusAdd = () => {
           </div>
         </div>
       </div>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <MuiAlert severity="success" sx={{ backgroundColor: 'green', color: 'white' }}>
+          Status added successfully!
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };

@@ -1,102 +1,209 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import {
+  Button,
+  TextField,
+  TextareaAutosize,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Snackbar,
+  Alert,
+} from '@mui/material';
+
+// Predefined lead source types
+const leadSourceTypes = [
+  { value: 'website', label: 'Website' },
+  { value: 'referral', label: 'Referral' },
+  { value: 'social_media', label: 'Social Media' },
+  { value: 'email_campaign', label: 'Email Campaign' },
+  { value: 'event', label: 'Event' },
+  { value: 'cold_call', label: 'Cold Call' },
+  { value: 'advertisement', label: 'Advertisement' },
+  { value: 'partner', label: 'Partner' },
+];
 
 const LeadSourceEdit = () => {
   const navigate = useNavigate();
-
-  // Dummy data for editing
+  const { id } = useParams(); // Get lead source ID from route
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [leadSource, setLeadSource] = useState({
-    source: 'Website Inquiry',
-    type: 'Organic',
-    description: 'Leads coming from the company website contact forms',
-    isActive: true
+    source: '',
+    type: '',
+    description: '',
+    isActive: true,
   });
 
-  // Dummy lead types for the dropdown
-  const leadTypes = [
-    { id: 1, name: 'Organic' },
-    { id: 2, name: 'Paid' },
-    { id: 3, name: 'Referral' },
-    { id: 4, name: 'Social Media' }
-  ];
+  // Fetch lead source by ID (GET)
+  useEffect(() => {
+    const fetchLeadSource = async () => {
+      try {
+        console.log(`Fetching lead source with ID: ${id}`); // Debug log
+        const response = await axios.get(`http://localhost:5000/api/lead-sources/${id}`);
+        console.log('API response:', response.data); // Debug log
+        const data = response.data; // Expect direct object
+        setLeadSource({
+          source: data.name || '',
+          type: data.type || '',
+          description: data.description || '',
+          isActive: data.is_active !== undefined ? data.is_active : true,
+        });
+      } catch (err) {
+        console.error('Error fetching lead source:', err.response?.data || err.message); // Debug log
+        const errorMessage = err.response?.status === 404
+          ? `Lead source with ID ${id} not found`
+          : 'Failed to load lead source';
+        setError(errorMessage);
+        setOpenSnackbar(true);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchLeadSource();
+  }, [id]);
+
+  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setLeadSource(prev => ({
+    setLeadSource((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
+  // Toggle status
   const toggleActiveStatus = () => {
-    setLeadSource(prev => ({
+    setLeadSource((prev) => ({
       ...prev,
-      isActive: !prev.isActive
+      isActive: !prev.isActive,
     }));
   };
+
+  // Save changes (PUT)
+  const handleSave = async () => {
+    if (!leadSource.source || !leadSource.type) {
+      setError('Lead Source and Lead Type are required');
+      setOpenSnackbar(true);
+      return;
+    }
+
+    try {
+      console.log('Sending PUT request with payload:', {
+        name: leadSource.source,
+        type: leadSource.type,
+        description: leadSource.description,
+        is_active: leadSource.isActive,
+      }); // Debug log
+      const response = await axios.put(`http://localhost:5000/api/lead-sources/${id}`, {
+        name: leadSource.source,
+        type: leadSource.type,
+        description: leadSource.description,
+        is_active: leadSource.isActive,
+      });
+      console.log('PUT response:', response.data); // Debug log
+      setSuccessMessage('Lead source updated successfully');
+      setOpenSnackbar(true);
+      setTimeout(() => {
+        navigate('/settings/lead-source');
+      }, 1500); // Navigate after Snackbar display
+    } catch (err) {
+      console.error('Error updating lead source:', err.response?.data || err.message); // Debug log
+      const errorMessage = err.response?.status === 404
+        ? `Lead source with ID ${id} not found`
+        : 'Failed to update lead source';
+      setError(errorMessage);
+      setOpenSnackbar(true);
+    }
+  };
+
+  // Handle Snackbar close
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+    setError(null);
+    setSuccessMessage(null);
+  };
+
+  if (loading) return <div className="p-6">Loading...</div>;
 
   return (
     <div className="p-6">
       <div className="mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Edit Lead Source</h1>
+          <Typography variant="h5" className="text-gray-900">Edit Lead Source</Typography>
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={() => navigate('/settings/lead-source')}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-md font-medium"
+              variant="contained"
+              sx={{ backgroundColor: '#d1d5db', color: '#1f2937', '&:hover': { backgroundColor: '#9ca3af' } }}
             >
               Cancel
-            </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            </Button>
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              sx={{ backgroundColor: '#f97316', color: '#ffffff', '&:hover': { backgroundColor: '#ea580c' } }}
+            >
               Update
-            </button>
+            </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Lead Source */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Lead Source</h2>
-            
+            <Typography variant="h6" className="text-gray-900 mb-6">Lead Source</Typography>
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Lead Source</label>
-                <input 
-                  type="text" 
+                <TextField
                   name="source"
                   value={leadSource.source}
                   onChange={handleInputChange}
                   placeholder="Enter Lead Source"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
+                  fullWidth
+                  variant="outlined"
+                  size="small"
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Lead Type</label>
-                <select 
-                  name="type"
-                  value={leadSource.type}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700"
-                >
-                  {leadTypes.map((type) => (
-                    <option key={type.id} value={type.name}>
-                      {type.name}
-                    </option>
-                  ))}
-                </select>
+                <FormControl fullWidth variant="outlined" size="small">
+                  <InputLabel>Select Lead Type</InputLabel>
+                  <Select
+                    name="type"
+                    value={leadSource.type}
+                    onChange={handleInputChange}
+                    label="Select Lead Type"
+                  >
+                    <MenuItem value=""><em>Select Lead Type</em></MenuItem>
+                    {leadSourceTypes.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea 
+                <TextareaAutosize
                   name="description"
                   value={leadSource.description}
                   onChange={handleInputChange}
                   placeholder="Enter Description"
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-700 resize-none"
+                  minRows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md resize-none"
                 />
               </div>
             </div>
@@ -104,19 +211,32 @@ const LeadSourceEdit = () => {
 
           {/* Right Column - Control */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-medium text-gray-900 mb-6">Control:</h2>
-            
+            <Typography variant="h6" className="text-gray-900 mb-6">Control:</Typography>
             <div className="flex items-center">
               <label className="text-sm font-medium text-gray-700 mr-4">Active Status*</label>
-              <div 
-                className={`relative inline-flex h-8 w-14 items-center rounded-full cursor-pointer transition-colors ${leadSource.isActive ? 'bg-orange-500' : 'bg-gray-200'}`}
+              <div
+                className={`relative inline-flex h-7 w-14 items-center rounded-full cursor-pointer transition-colors ${
+                  leadSource.isActive ? 'bg-orange-500' : 'bg-gray-200'
+                }`}
                 onClick={toggleActiveStatus}
               >
-                <div className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${leadSource.isActive ? 'translate-x-7' : 'translate-x-1'} shadow-sm`}>
+                <div
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                    leadSource.isActive ? 'translate-x-7' : 'translate-x-1'
+                  } shadow-sm`}
+                >
                   {leadSource.isActive && (
                     <div className="flex items-center justify-center h-full">
-                      <svg className="h-3 w-3 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      <svg
+                        className="h-3 w-3 text-orange-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                   )}
@@ -126,6 +246,32 @@ const LeadSourceEdit = () => {
           </div>
         </div>
       </div>
+
+      {/* Snackbar for Success/Error Messages */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={successMessage ? 'success' : 'error'}
+          sx={{
+            width: '100%',
+            backgroundColor: successMessage ? '#22c55e' : '#ef4444', // Green for success, red for error
+            color: '#ffffff', // White text for contrast
+            '& .MuiAlert-icon': {
+              color: '#ffffff', // White icon for contrast
+            },
+            '& .MuiAlert-action': {
+              color: '#ffffff', // White close button
+            },
+          }}
+        >
+          {successMessage || error}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

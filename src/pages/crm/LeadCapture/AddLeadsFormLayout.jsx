@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AddLeadsFormLayout = () => {
   const navigate = useNavigate(); // Navigation hook
   const [formData, setFormData] = useState({
-    enquiryNo: "LED044",
-    leadDate: "20-06-2025",
+    enquiryNo: `LED-${Math.floor(100 + Math.random() * 900)}`,
+    leadDate: "",
     leadType: "",
     leadSource: "",
     notes: "",
@@ -25,19 +25,89 @@ const AddLeadsFormLayout = () => {
   });
 
   const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log(formData);
+  const handleSubmit = async () => {
+    // Map your formData to the API's expected field names
+    const payload = {
+      enquiry_no: formData.enquiryNo,
+      lead_date: formData.leadDate,
+      lead_type: formData.leadType,
+      lead_source: formData.leadSource,
+      notes: formData.notes,
+      prospect: formData.prospect,
+      contact_person: formData.contactPerson,
+      email: formData.email,
+      mobile: formData.mobile,
+      department: formData.department,
+      designation: formData.designation,
+      address_line1: formData.addressLine1,
+      state: formData.state,
+      city: formData.city,
+      pincode: formData.pincode,
+      bde: formData.bde,
+      client_servicing_person: formData.clientServicingPerson,
+      active_status: formData.activeStatus,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/leads/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Lead created:", data);
+      // Navigate to lead capture list page after success
+      navigate("/lead-capture");
+    } catch (error) {
+      console.error("Error creating lead:", error);
+      // Optionally show user feedback on error here
+    }
   };
 
   const handleCancel = () => {
     navigate("/lead-capture");
   };
 
+  // Fetch city and state based on pincode
+  useEffect(() => {
+    const fetchPincodeData = async () => {
+      if (formData.pincode.length === 6) {
+        try {
+          const response = await fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`);
+          const data = await response.json();
+          if (data[0].Status === "Success" && data[0].PostOffice.length > 0) {
+            const { State, District } = data[0].PostOffice[0];
+            handleChange("state", State);
+            handleChange("city", District);
+          } else {
+            handleChange("state", "");
+            handleChange("city", "");
+          }
+        } catch (error) {
+          console.error("Error fetching pincode data:", error);
+          handleChange("state", "");
+          handleChange("city", "");
+        }
+      } else {
+        handleChange("state", "");
+        handleChange("city", "");
+      }
+    };
+    fetchPincodeData();
+  }, [formData.pincode]);
+
   return (
-    <div className=" min-h-screen p-6">
+    <div className="min-h-screen p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-medium text-gray-800">crm/leadcapture/add lead</h1>
@@ -56,9 +126,10 @@ const AddLeadsFormLayout = () => {
           </button>
         </div>
       </div>
+
       {/* Form Content */}
       <div className="space-y-6">
-        {/* Basic Lead Details - Constrained Width */}
+        {/* Basic Lead Details */}
         <div className="w-full max-w-2xl">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-medium mb-4 text-gray-800">
@@ -81,10 +152,10 @@ const AddLeadsFormLayout = () => {
                   Lead Date*
                 </label>
                 <input
-                  type="text"
+                  type="date"
                   value={formData.leadDate}
                   onChange={(e) => handleChange("leadDate", e.target.value)}
-                  className="w-full border border-gray-300 p-2 rounded-md"
+                  className="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
@@ -126,7 +197,8 @@ const AddLeadsFormLayout = () => {
             </div>
           </div>
         </div>
-        {/* Client Information and Internal Assignment Side by Side */}
+
+        {/* Client Information and Internal Assignment */}
         <div className="grid grid-cols-2 gap-6">
           {/* Client Information */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -214,72 +286,71 @@ const AddLeadsFormLayout = () => {
                   />
                 </div>
               </div>
-            </div>
-            {/* Address Section */}
-            <div className="mt-6">
-              <h3 className="text-lg font-medium mb-4 text-gray-800">
-                Address
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address line 1
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.addressLine1}
-                    onChange={(e) =>
-                      handleChange("addressLine1", e.target.value)
-                    }
-                    placeholder="Enter Description"
-                    className="w-full border border-gray-300 p-2 rounded-md"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
+              {/* Address Section */}
+              <div className="mt-6">
+                <h3 className="text-lg font-medium mb-4 text-gray-800">
+                  Address
+                </h3>
+                <div className="space-y-4">
+                  {/* Pincode First */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      State*
+                      Pincode*
                     </label>
-                    <select
-                      value={formData.state}
-                      onChange={(e) => handleChange("state", e.target.value)}
+                    <input
+                      type="text"
+                      value={formData.pincode}
+                      onChange={(e) => handleChange("pincode", e.target.value)}
+                      placeholder="Enter Pincode"
                       className="w-full border border-gray-300 p-2 rounded-md"
-                    >
-                      <option value="">Select</option>
-                      <option value="State1">State 1</option>
-                      <option value="State2">State 2</option>
-                    </select>
+                      maxLength={6}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        State*
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.state}
+                        readOnly
+                        placeholder="Auto-filled"
+                        className="w-full border border-gray-300 p-2 rounded-md bg-gray-50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        City*
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.city}
+                        readOnly
+                        placeholder="Auto-filled"
+                        className="w-full border border-gray-300 p-2 rounded-md bg-gray-50"
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      City*
+                      Address line 1
                     </label>
-                    <select
-                      value={formData.city}
-                      onChange={(e) => handleChange("city", e.target.value)}
+                    <input
+                      type="text"
+                      value={formData.addressLine1}
+                      onChange={(e) =>
+                        handleChange("addressLine1", e.target.value)
+                      }
+                      placeholder="Enter Description"
                       className="w-full border border-gray-300 p-2 rounded-md"
-                    >
-                      <option value="">Select</option>
-                      <option value="City1">City 1</option>
-                      <option value="City2">City 2</option>
-                    </select>
+                    />
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Pincode*
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.pincode}
-                    onChange={(e) => handleChange("pincode", e.target.value)}
-                    placeholder="Enter Pincode"
-                    className="w-full border border-gray-300 p-2 rounded-md"
-                  />
                 </div>
               </div>
             </div>
           </div>
+
           {/* Right Side Column */}
           <div className="space-y-6">
             {/* Internal Assignment */}
@@ -321,6 +392,7 @@ const AddLeadsFormLayout = () => {
                 </div>
               </div>
             </div>
+
             {/* Control */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h2 className="text-lg font-medium mb-4 text-gray-800">
@@ -349,5 +421,4 @@ const AddLeadsFormLayout = () => {
     </div>
   );
 };
-
 export default AddLeadsFormLayout;

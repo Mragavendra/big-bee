@@ -1,28 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const EmployeeMasterEdit = () => {
+  const { id } = useParams(); // Extract employee ID from URL
   const [isActive, setIsActive] = useState(true);
   const navigate = useNavigate();
-  
-  // Dummy data for the employee
   const [employeeData, setEmployeeData] = useState({
-    employeeId: 'SUR145',
-    fullName: 'John Doe',
-    email: 'john.doe@example.com',
-    mobile: '9123456789',
-    addressLine1: '123 Main Street',
-    landmark: 'Near Central Park',
-    street: 'Main Street',
-    state: 'Karnataka',
-    city: 'Bangalore',
-    pincode: '560001',
-    department: 'IT',
-    designation: 'Software Engineer',
-    reportsTo: 'Jane Smith',
-    dateOfJoining: '2023-01-15',
-    notes: 'Excellent performer',
+    employeeId: '',
+    fullName: '',
+    email: '',
+    mobile: '',
+    addressLine1: '',
+    landmark: '',
+    street: '',
+    state: '',
+    city: '',
+    pincode: '',
+    department: '',
+    designation: '',
+    reportsTo: '',
+    dateOfJoining: '',
+    notes: '',
   });
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +39,84 @@ const EmployeeMasterEdit = () => {
   const departments = ['IT', 'HR', 'Finance', 'Marketing', 'Operations'];
   const designations = ['Software Engineer', 'HR Manager', 'Accountant', 'Marketing Executive', 'Operations Manager'];
   const reportTos = ['Jane Smith', 'Michael Johnson', 'Sarah Williams', 'David Brown', 'Emily Davis'];
+
+  // Fetch employee data on component mount
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`http://localhost:5000/api/employees/${id}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        console.log('Fetched data:', data); // Debug log
+        setEmployeeData({
+          employeeId: data.employee_id || '',
+          fullName: data.full_name || '',
+          email: data.email || '',
+          mobile: data.mobile_number || '',
+          addressLine1: data.address_line1 || '',
+          landmark: data.landmark || '',
+          street: data.street || '',
+          state: data.state || '',
+          city: data.city || '',
+          pincode: data.pincode || '',
+          department: data.department || '',
+          designation: data.designation || '',
+          reportsTo: data.reports_to || '',
+          dateOfJoining: data.date_of_joining || '',
+          notes: data.notes || '',
+        });
+        setIsActive(data.is_active || true);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchEmployee();
+  }, [id]);
+
+  // Handle Save (PUT request)
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/employees/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          employee_id: employeeData.employeeId,
+          full_name: employeeData.fullName,
+          email: employeeData.email,
+          mobile_number: employeeData.mobile,
+          address_line1: employeeData.addressLine1,
+          landmark: employeeData.landmark,
+          street: employeeData.street,
+          state: employeeData.state,
+          city: employeeData.city,
+          pincode: employeeData.pincode,
+          department: employeeData.department,
+          designation: employeeData.designation,
+          reports_to: employeeData.reportsTo,
+          date_of_joining: employeeData.dateOfJoining,
+          notes: employeeData.notes,
+          is_active: isActive,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to update employee data');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Update error:', error);
+      setError(error.message);
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="p-6">
@@ -49,7 +131,10 @@ const EmployeeMasterEdit = () => {
             >
               Cancel
             </button>
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium">
+            <button 
+              onClick={handleSave}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            >
               Save
             </button>
           </div>
@@ -298,6 +383,13 @@ const EmployeeMasterEdit = () => {
             </div>
           </div>
         </div>
+
+        {/* Success Snackbar */}
+        <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
+          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+            Employee updated successfully!
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );

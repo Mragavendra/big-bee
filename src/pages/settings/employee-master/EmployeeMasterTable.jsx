@@ -1,68 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Switch from '@mui/material/Switch';
 
 const EmployeeMasterTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const columns = [
-    { id: 'empId', label: 'Emp Id' },
-    { id: 'fullName', label: 'Full Name' },
+    { id: 'employee_id', label: 'Emp Id' },
+    { id: 'full_name', label: 'Full Name' },
     { id: 'department', label: 'Department' },
     { id: 'designation', label: 'Designation' },
-    { id: 'reportsTo', label: 'Reports to' },
+    { id: 'reports_to', label: 'Reports to' },
   ];
 
-  const data = [
-    {
-      id: '1',
-      empId: 'EMP123',
-      fullName: 'Ankit Sharma',
-      department: 'Marketing',
-      designation: 'Manager',
-      reportsTo: 'Rahul (Head)',
-      status: 'Active'
-    },
-    {
-      id: '2',
-      empId: 'EMP456',
-      fullName: 'Anand Kumar',
-      department: 'Creative Department',
-      designation: 'Manager',
-      reportsTo: 'Priya (Head)',
-      status: 'Active'
-    },
-    {
-      id: '3',
-      empId: 'EMP891',
-      fullName: 'Rohan',
-      department: 'Marketing',
-      designation: 'Department Head',
-      reportsTo: '-',
-      status: 'Active'
-    },
-    {
-      id: '4',
-      empId: 'EMP784',
-      fullName: 'Priya Raj',
-      department: 'Project Management',
-      designation: 'Executive',
-      reportsTo: 'Ajay (Manager)',
-      status: 'Active'
-    },
-    {
-      id: '5',
-      empId: 'EMP784',
-      fullName: 'Ajay Verma',
-      department: 'Lead Distribution',
-      designation: 'Manager',
-      reportsTo: 'Rahul (Head)',
-      status: 'Active'
-    },
-  ];
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/employees');
+        if (!response.ok) {
+          throw new Error('Failed to fetch employee data');
+        }
+        const result = await response.json();
+        const formattedData = result.map(employee => ({
+          id: employee.id.toString(),
+          employee_id: employee.employee_id || 'N/A',
+          full_name: employee.full_name || 'N/A',
+          department: employee.department || 'N/A',
+          designation: employee.designation || 'N/A',
+          reports_to: employee.reports_to || 'N/A',
+          status: employee.is_active ? 'Active' : 'Inactive'
+        }));
+        setData(formattedData);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
 
   const headerButtons = [
     {
@@ -84,6 +71,14 @@ const EmployeeMasterTable = () => {
       },
     }
   ];
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <DynamicTable

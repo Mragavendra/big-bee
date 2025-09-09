@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DynamicTable from '../../../table/DynamicTable';
 import {
@@ -10,6 +10,8 @@ import {
 const LeadCapture = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const columns = [
     { id: 'enquiryNo', label: 'Enquiry No', width: 120 },
@@ -20,59 +22,6 @@ const LeadCapture = () => {
     { id: 'mobileNumber', label: 'Mobile Number', width: 140 },
     { id: 'assignedBde', label: 'Assigned BDE', width: 150 },
     { id: 'assignedCs', label: 'Assigned CS', width: 150 },
-  ];
-
-  const data = [
-    {
-      enquiryNo: 'ENQ001',
-      leadDate: '2025-09-01',
-      leadType: 'New',
-      leadSource: 'Website',
-      prospect: 'John Doe',
-      mobileNumber: '9876543210',
-      assignedBde: 'Alice Smith',
-      assignedCs: 'Bob Johnson',
-    },
-    {
-      enquiryNo: 'ENQ002',
-      leadDate: '2025-09-02',
-      leadType: 'Follow-up',
-      leadSource: 'Referral',
-      prospect: 'Jane Roe',
-      mobileNumber: '9123456780',
-      assignedBde: 'Charlie Brown',
-      assignedCs: 'Daisy Miller',
-    },
-    {
-      enquiryNo: 'ENQ003',
-      leadDate: '2025-09-03',
-      leadType: 'New',
-      leadSource: 'Email Campaign',
-      prospect: 'Michael Scott',
-      mobileNumber: '9988776655',
-      assignedBde: 'Pam Beesly',
-      assignedCs: 'Jim Halpert',
-    },
-    {
-      enquiryNo: 'ENQ004',
-      leadDate: '2025-09-04',
-      leadType: 'New',
-      leadSource: 'Social Media',
-      prospect: 'Dwight Schrute',
-      mobileNumber: '9012345678',
-      assignedBde: 'Angela Martin',
-      assignedCs: 'Oscar Martinez',
-    },
-    {
-      enquiryNo: 'ENQ005',
-      leadDate: '2025-09-05',
-      leadType: 'Follow-up',
-      leadSource: 'Website',
-      prospect: 'Stanley Hudson',
-      mobileNumber: '9234567890',
-      assignedBde: 'Phyllis Vance',
-      assignedCs: 'Meredith Palmer',
-    },
   ];
 
   const headerButtons = [
@@ -116,11 +65,45 @@ const LeadCapture = () => {
     },
   ];
 
+  // Fetch leads from backend
+  const fetchLeads = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/leads'); // Your GET API endpoint
+      const result = await response.json();
+      if (response.ok) {
+        // Map API fields to table columns
+        const mappedData = result.map((lead) => ({
+          enquiryNo: lead.enquiry_no,
+          leadDate: lead.lead_date,
+          leadType: lead.lead_type,
+          leadSource: lead.lead_source,
+          prospect: lead.prospect,
+          mobileNumber: lead.mobile,
+          assignedBde: lead.bde,
+          assignedCs: lead.client_servicing_person,
+        }));
+        setData(mappedData);
+      } else {
+        console.error('Failed to fetch leads:', result.message);
+      }
+    } catch (error) {
+      console.error('Error fetching leads:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeads();
+  }, []);
+
   return (
     <DynamicTable
       title="Leads Management"
       columns={columns}
       data={data}
+      loading={loading}
       rowsPerPage={5}
       headerButtons={headerButtons}
       addButtonLabel="Add Leads"
@@ -128,7 +111,8 @@ const LeadCapture = () => {
         color: 'primary',
         size: 'small',
         startIcon: <AddIcon />,
-        sx: { textTransform: 'none' }
+        sx: { textTransform: 'none' },
+        onClick: () => navigate(`${location.pathname}/add`),
       }}
       searchPlaceholder="Search leads..."
       categoryLabel="All Categories"

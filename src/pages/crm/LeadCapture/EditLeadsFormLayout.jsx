@@ -1,131 +1,107 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+// Normalize API <-> form field mapping
+const apiToForm = (api) => ({
+  enquiryNo: api.enquiry_no ?? "",
+  leadDate: api.lead_date ?? "",
+  leadType: api.lead_type ?? "",
+  leadSource: api.lead_source ?? "",
+  notes: api.notes ?? "",
+  prospect: api.prospect ?? "",
+  contactPerson: api.contact_person ?? "",
+  email: api.email ?? "",
+  mobile: api.mobile ?? "",
+  department: api.department ?? "",
+  designation: api.designation ?? "",
+  addressLine1: api.address_line1 ?? "",
+  state: api.state ?? "",
+  city: api.city ?? "",
+  pincode: api.pincode ?? "",
+  bde: api.bde ?? "",
+  clientServicingPerson: api.client_servicing_person ?? "",
+  activeStatus: api.active_status ?? false,
+});
+
+const formToApi = (form) => ({
+  enquiry_no: form.enquiryNo,
+  lead_date: form.leadDate,
+  lead_type: form.leadType,
+  lead_source: form.leadSource,
+  notes: form.notes,
+  prospect: form.prospect,
+  contact_person: form.contactPerson,
+  email: form.email,
+  mobile: form.mobile,
+  department: form.department,
+  designation: form.designation,
+  address_line1: form.addressLine1,
+  state: form.state,
+  city: form.city,
+  pincode: form.pincode,
+  bde: form.bde,
+  client_servicing_person: form.clientServicingPerson,
+  active_status: form.activeStatus,
+});
+
 const EditLeadsFormLayout = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get lead ID from URL params
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    enquiryNo: "",
-    leadDate: "",
-    leadType: "",
-    leadSource: "",
-    notes: "",
-    prospect: "",
-    contactPerson: "",
-    email: "",
-    mobile: "",
-    department: "",
-    designation: "",
-    addressLine1: "",
-    state: "",
-    city: "",
-    pincode: "",
-    bde: "",
-    clientServicingPerson: "",
-    activeStatus: true,
-  });
+  const { id } = useParams();
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitLoading, setSubmitLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`http://localhost:5000/api/leads/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Lead not found");
+        return res.json();
+      })
+      .then((data) => {
+        setFormData(apiToForm(data));
+      })
+      .catch(() => {
+        alert("Failed to fetch lead details");
+        navigate("/lead-capture");
+      })
+      .finally(() => setLoading(false));
+  }, [id, navigate]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Fetch lead data by ID
-  useEffect(() => {
-    const fetchLeadData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`http://localhost:5000/api/leads/${id}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-        const result = await response.json();
-        if (response.ok) {
-          setFormData({
-            enquiryNo: result.enquiry_no,
-            leadDate: result.lead_date,
-            leadType: result.lead_type,
-            leadSource: result.lead_source,
-            notes: result.notes,
-            prospect: result.prospect,
-            contactPerson: result.contact_person,
-            email: result.email,
-            mobile: result.mobile,
-            department: result.department,
-            designation: result.designation,
-            addressLine1: result.address_line1,
-            state: result.state,
-            city: result.city,
-            pincode: result.pincode,
-            bde: result.bde,
-            clientServicingPerson: result.client_servicing_person,
-            activeStatus: result.active_status,
-          });
-        } else {
-          alert(result.message || "Failed to fetch lead data");
-          console.error(result);
-        }
-      } catch (error) {
-        console.error("Error fetching lead data:", error);
-        alert("Something went wrong while fetching lead data. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLeadData();
-  }, [id]);
-
-  // Update lead data
   const handleSubmit = async () => {
-    setLoading(true);
+    setSubmitLoading(true);
     try {
-      const payload = {
-        enquiry_no: formData.enquiryNo,
-        lead_date: formData.leadDate,
-        lead_type: formData.leadType,
-        lead_source: formData.leadSource,
-        notes: formData.notes,
-        prospect: formData.prospect,
-        contact_person: formData.contactPerson,
-        email: formData.email,
-        mobile: formData.mobile,
-        department: formData.department,
-        designation: formData.designation,
-        address_line1: formData.addressLine1,
-        state: formData.state,
-        city: formData.city,
-        pincode: formData.pincode,
-        bde: formData.bde,
-        client_servicing_person: formData.clientServicingPerson,
-        active_status: formData.activeStatus,
-      };
-
-      const response = await fetch(`http://localhost:5000/api/leads/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/leads/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formToApi(formData)),
       });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert("Lead updated successfully!");
-        navigate("/lead-capture");
-      } else {
-        alert(result.message || "Failed to update lead");
-        console.error(result);
-      }
-    } catch (error) {
-      console.error("Error updating lead:", error);
-      alert("Something went wrong. Please try again.");
+      if (!res.ok) throw new Error("Update failed");
+      navigate("/lead-capture");
+    } catch (e) {
+      alert("Failed to update lead");
     } finally {
-      setLoading(false);
+      setSubmitLoading(false);
     }
   };
 
   const handleCancel = () => {
     navigate("/lead-capture");
   };
+
+  if (loading || !formData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <span className="text-gray-500">Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-6">
@@ -138,15 +114,16 @@ const EditLeadsFormLayout = () => {
           <button
             onClick={handleCancel}
             className="bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 px-6 py-2 rounded-md font-medium"
+            disabled={submitLoading}
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            disabled={loading}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium disabled:opacity-50"
+            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+            disabled={submitLoading}
           >
-            {loading ? "Saving..." : "Save"}
+            {submitLoading ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
@@ -221,7 +198,6 @@ const EditLeadsFormLayout = () => {
             </div>
           </div>
         </div>
-
         {/* Client Information and Internal Assignment */}
         <div className="grid grid-cols-2 gap-6">
           {/* Client Information */}
@@ -290,7 +266,9 @@ const EditLeadsFormLayout = () => {
                   <input
                     type="text"
                     value={formData.department}
-                    onChange={(e) => handleChange("department", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("department", e.target.value)
+                    }
                     placeholder="Enter Department"
                     className="w-full border border-gray-300 p-2 rounded-md"
                   />
@@ -316,7 +294,6 @@ const EditLeadsFormLayout = () => {
                   Address
                 </h3>
                 <div className="space-y-4">
-                  {/* Pincode First */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Pincode*
@@ -374,9 +351,9 @@ const EditLeadsFormLayout = () => {
               </div>
             </div>
           </div>
-
-          {/* Internal Assignment */}
+          {/* Right Side Column */}
           <div className="space-y-6">
+            {/* Internal Assignment */}
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h2 className="text-lg font-medium mb-4 text-gray-800">
                 Internal Assignment
@@ -396,7 +373,6 @@ const EditLeadsFormLayout = () => {
                     <option value="BDE2">BDE 2</option>
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Client Servicing Person
@@ -413,23 +389,28 @@ const EditLeadsFormLayout = () => {
                     <option value="Person2">Person 2</option>
                   </select>
                 </div>
-
-                <div className="flex items-center space-x-3 mt-6">
-                  <span className="text-sm font-medium text-gray-700">
-                    Active Status*
-                  </span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={formData.activeStatus}
-                      onChange={(e) =>
-                        handleChange("activeStatus", e.target.checked)
-                      }
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-                  </label>
-                </div>
+              </div>
+            </div>
+            {/* Control */}
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-lg font-medium mb-4 text-gray-800">
+                Control:
+              </h2>
+              <div className="flex items-center space-x-3">
+                <span className="text-sm font-medium text-gray-700">
+                  Active Status*
+                </span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={formData.activeStatus}
+                    onChange={(e) =>
+                      handleChange("activeStatus", e.target.checked)
+                    }
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+                </label>
               </div>
             </div>
           </div>

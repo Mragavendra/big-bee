@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Snackbar, Alert } from '@mui/material';
 
 export const PerformanceMisAdd = () => {
   const navigate = useNavigate();
@@ -18,6 +20,23 @@ export const PerformanceMisAdd = () => {
     creditNote: '0',
     balanceAfterTds: '0'
   });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'info',
+  });
+
+  // Calculate totalCollectedAmt whenever payments change
+  useEffect(() => {
+    const total = formData.payments.reduce((sum, payment) => {
+      const amount = parseFloat(payment.amount) || 0;
+      return sum + amount;
+    }, 0);
+    setFormData(prev => ({
+      ...prev,
+      totalCollectedAmt: total.toFixed(2) // Ensure 2 decimal places
+    }));
+  }, [formData.payments]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,18 +62,67 @@ export const PerformanceMisAdd = () => {
     }));
   };
 
-  const handleSave = () => {
-    console.log('Form Data:', formData);
-    // Handle save logic here
+  const handleSave = async () => {
+    // Transform formData to match API's snake_case and payment structure
+    const apiData = {
+      billing_no: formData.billingNo,
+      enquiry_no: formData.enquiryNo,
+      invoice_date: formData.invoiceDate,
+      project_name: formData.projectName,
+      basic_amt: parseFloat(formData.basicAmt) || 0,
+      tax: parseFloat(formData.tax) || 0,
+      total_amt: parseFloat(formData.totalAmt) || 0,
+      payments: formData.payments.map(payment => ({
+        payment_date: payment.date,
+        amount: parseFloat(payment.amount) || 0
+      })),
+      total_collected_amt: parseFloat(formData.totalCollectedAmt) || 0,
+      balance: parseFloat(formData.balance) || 0,
+      tds_amount: parseFloat(formData.tdsAmount) || 0,
+      credit_note: parseFloat(formData.creditNote) || 0,
+      balance_after_tds: parseFloat(formData.balanceAfterTds) || 0
+    };
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/performance/create', apiData);
+      console.log('Form Data Submitted:', response.data);
+      setSnackbar({
+        open: true,
+        message: 'Project profitability report created successfully',
+        severity: 'success',
+      });
+      setTimeout(() => navigate('/performance-mis'), 2000); // Redirect after 2 seconds
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to create report. Please try again.',
+        severity: 'error',
+      });
+    }
   };
 
   const handleCancel = () => {
     navigate('/performance-mis');
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   return (
     <div className="min-h-screen p-6">
       <div className="mx-auto">
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">Add Project Profitability Analysis Report</h1>
@@ -92,6 +160,7 @@ export const PerformanceMisAdd = () => {
                       name="billingNo"
                       value={formData.billingNo}
                       onChange={handleInputChange}
+                      placeholder="Enter Billing Number"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>
@@ -105,6 +174,7 @@ export const PerformanceMisAdd = () => {
                       name="enquiryNo"
                       value={formData.enquiryNo}
                       onChange={handleInputChange}
+                      placeholder="Enter Enquiry Number"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>
@@ -119,6 +189,7 @@ export const PerformanceMisAdd = () => {
                     name="invoiceDate"
                     value={formData.invoiceDate}
                     onChange={handleInputChange}
+                    placeholder="Select Invoice Date"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   />
                 </div>
@@ -132,6 +203,7 @@ export const PerformanceMisAdd = () => {
                     name="projectName"
                     value={formData.projectName}
                     onChange={handleInputChange}
+                    placeholder="Enter Project Name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   />
                 </div>
@@ -153,6 +225,7 @@ export const PerformanceMisAdd = () => {
                       name="basicAmt"
                       value={formData.basicAmt}
                       onChange={handleInputChange}
+                      placeholder="Enter Basic Amount"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>
@@ -166,6 +239,7 @@ export const PerformanceMisAdd = () => {
                       name="tax"
                       value={formData.tax}
                       onChange={handleInputChange}
+                      placeholder="Enter Tax Amount"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>
@@ -180,6 +254,7 @@ export const PerformanceMisAdd = () => {
                     name="totalAmt"
                     value={formData.totalAmt}
                     onChange={handleInputChange}
+                    placeholder="Enter Total Amount"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   />
                 </div>
@@ -206,6 +281,7 @@ export const PerformanceMisAdd = () => {
                           type="number"
                           value={payment.amount}
                           onChange={(e) => handlePaymentChange(index, 'amount', e.target.value)}
+                          placeholder="Enter Payment Amount"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                         />
                       </div>
@@ -218,6 +294,7 @@ export const PerformanceMisAdd = () => {
                           type="date"
                           value={payment.date}
                           onChange={(e) => handlePaymentChange(index, 'date', e.target.value)}
+                          placeholder="Select Payment Date"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                         />
                       </div>
@@ -241,8 +318,8 @@ export const PerformanceMisAdd = () => {
                     type="number"
                     name="totalCollectedAmt"
                     value={formData.totalCollectedAmt}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -262,6 +339,7 @@ export const PerformanceMisAdd = () => {
                     name="balance"
                     value={formData.balance}
                     onChange={handleInputChange}
+                    placeholder="Enter Balance Amount"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   />
                 </div>
@@ -276,19 +354,21 @@ export const PerformanceMisAdd = () => {
                       name="tdsAmount"
                       value={formData.tdsAmount}
                       onChange={handleInputChange}
+                      placeholder="Enter TDS Amount"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Credit note
+                      Credit Note
                     </label>
                     <input
                       type="number"
                       name="creditNote"
                       value={formData.creditNote}
                       onChange={handleInputChange}
+                      placeholder="Enter Credit Note Amount"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                     />
                   </div>
@@ -303,6 +383,7 @@ export const PerformanceMisAdd = () => {
                     name="balanceAfterTds"
                     value={formData.balanceAfterTds}
                     onChange={handleInputChange}
+                    placeholder="Enter Balance After TDS"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   />
                 </div>

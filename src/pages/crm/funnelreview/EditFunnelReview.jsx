@@ -1,162 +1,279 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EditFunnelReview = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
-  
+  const { id } = useParams();
   const [formData, setFormData] = useState({
     // Basic Lead Details
-    enquiryNo: 'LED044',
-    leadDate: '20-06-2025',
-    funnelStatus: '',
-    action: '',
-    lastFollowUpDate: '',
-    nextFollowUpDate: '',
-    lostOrderDate: '',
-    
+    enquiryNo: "ENQ104",
+    leadDate: "2025-09-09",
+    funnelStatus: "hot",
+    action: "follow-up",
+    lastFollowUpDate: "2025-09-08",
+    nextFollowUpDate: "2025-09-15",
+    lostOrderDate: "",
     // Follow Up Details
-    followUpLastDate: '',
-    followUpNextDate: '20-06-2025',
-    followUpNotes: '',
-    
+    followUpLastDate: "2025-09-08",
+    followUpNextDate: "2025-09-15",
+    followUpNotes: "Called client, waiting for confirmation",
     // Customer Details
-    prospect: '',
-    contactPerson: '',
-    email: '',
-    mobileNumber: '',
-    department: '',
-    designation: '',
-    
+    prospect: "ABC Corp",
+    contactPerson: "John Doe",
+    email: "johndoe@example.com",
+    mobileNumber: "9876543210",
+    department: "Sales",
+    designation: "Manager",
     // Address
-    addressLine1: '',
-    landmark: '',
-    street: '',
-    state: '',
-    city: '',
-    pincode: '',
-    
+    addressLine1: "123 Test Street",
+    landmark: "Near Park",
+    street: "Main Street",
+    state: "Karnataka",
+    city: "Bangalore",
+    pincode: "560001",
     // Quotation Details
-    quotationDate: '20-06-2025',
-    quotationNo: 'LED044',
-    quotationValue: '20-06-2025',
-    closureTarget: '',
-    
+    quotationDate: "2025-09-10",
+    quotationNo: "QUO104",
+    quotationValue: "15000",
+    closureTarget: "End of September",
     // Lead Qualification
-    leadSource: '',
-    eventDate: 'LED044',
-    eventLocation: '20-06-2025',
-    service: '',
-    
+    leadSource: "Website",
+    eventDate: "2025-09-12",
+    eventLocation: "Bangalore",
+    service: "Consulting",
     // Internal Assignment
-    bde: '',
-    clientServicingPerson: '',
-    
+    bde: "john-doe",
+    clientServicingPerson: "sarah-wilson",
     // Additional Briefs & Comments
-    briefs: '',
-    comments: '',
-    
+    briefs: "Client wants a premium package",
+    comments: "Follow up next week",
     // Control
-    activeStatus: true
+    activeStatus: true,
   });
-
-  // Fetch existing data when component mounts
-  useEffect(() => {
-    // Simulate API call to fetch existing data
-    const fetchData = async () => {
-      try {
-        // Replace with actual API call
-        // const response = await axios.get(`/api/funnel/${id}`);
-        // setFormData(response.data);
-        
-        // Mock data for demonstration
-        const mockData = {
-          enquiryNo: 'LED044',
-          leadDate: '20-06-2025',
-          funnelStatus: 'hot',
-          action: 'follow-up',
-          lastFollowUpDate: '15-06-2025',
-          nextFollowUpDate: '25-06-2025',
-          lostOrderDate: '',
-          followUpLastDate: '15-06-2025',
-          followUpNextDate: '20-06-2025',
-          followUpNotes: 'Client requested more details about pricing',
-          prospect: 'ABC Pvt. Ltd.',
-          contactPerson: 'Raghu',
-          email: 'raghu@abc.com',
-          mobileNumber: '9123456789',
-          department: 'HR',
-          designation: 'Manager',
-          addressLine1: '123 Business Park',
-          landmark: 'Near Central Mall',
-          street: 'MG Road',
-          state: 'karnataka',
-          city: 'bangalore',
-          pincode: '560001',
-          quotationDate: '20-06-2025',
-          quotationNo: 'Q-2025-06-001',
-          quotationValue: '12000000',
-          closureTarget: '30-06-2025',
-          leadSource: 'Instagram',
-          eventDate: '15-07-2025',
-          eventLocation: 'Bangalore',
-          service: 'MICE',
-          bde: 'john-doe',
-          clientServicingPerson: 'sarah-wilson',
-          briefs: 'Corporate retreat for 50 people',
-          comments: 'Client is interested in premium package',
-          activeStatus: true
-        };
-        
-        setFormData(mockData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    
-    fetchData();
-  }, [id]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  const handleUpdate = () => {
-    console.log('Updated Data:', formData);
-    // Handle update logic here
-    // try {
-    //   await axios.put(`/api/funnel/${id}`, formData);
-    //   navigate('/funnel-review'); // Redirect after successful update
-    // } catch (error) {
-    //   console.error('Error updating:', error);
-    // }
-    navigate('/funnel-review'); // Temporary redirect for demo
+  // Fetch data for the specific ID
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:5000/api/funnel-tracker/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setFormData({
+          enquiryNo: data.enquiry_no || "",
+          leadDate: data.lead_date ? new Date(data.lead_date).toISOString().split("T")[0] : "",
+          funnelStatus: data.funnel_status || "",
+          action: data.action || "",
+          lastFollowUpDate: data.last_follow_up_date
+            ? new Date(data.last_follow_up_date).toISOString().split("T")[0]
+            : "",
+          nextFollowUpDate: data.next_follow_up_date
+            ? new Date(data.next_follow_up_date).toISOString().split("T")[0]
+            : "",
+          lostOrderDate: data.lost_order_date
+            ? new Date(data.lost_order_date).toISOString().split("T")[0]
+            : "",
+          followUpLastDate: data.last_follow_up_date
+            ? new Date(data.last_follow_up_date).toISOString().split("T")[0]
+            : "",
+          followUpNextDate: data.next_follow_up_date
+            ? new Date(data.next_follow_up_date).toISOString().split("T")[0]
+            : "",
+          followUpNotes: data.comments || "",
+          prospect: data.prospect || "",
+          contactPerson: data.contact_person || "",
+          email: data.email || "",
+          mobileNumber: data.mobile_number || "",
+          department: data.department || "",
+          designation: data.designation || "",
+          addressLine1: data.address_line_1 || "",
+          landmark: data.landmark || "",
+          street: data.street || "",
+          state: data.state || "",
+          city: data.city || "",
+          pincode: data.pincode || "",
+          quotationDate: data.quotation_date
+            ? new Date(data.quotation_date).toISOString().split("T")[0]
+            : "",
+          quotationNo: data.quotation_no || "",
+          quotationValue: data.quotation_value ? data.quotation_value.toString() : "",
+          closureTarget: data.closure_target || "",
+          leadSource: data.lead_source || "",
+          eventDate: data.event_date
+            ? new Date(data.event_date).toISOString().split("T")[0]
+            : "",
+          eventLocation: data.event_location || "",
+          service: data.service || "",
+          bde: data.bde || "",
+          clientServicingPerson: data.client_servicing_person || "",
+          briefs: data.briefs || "",
+          comments: data.comments || "",
+          activeStatus: data.active_status || false,
+        });
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching funnel tracker data:", error);
+        setError("Failed to load funnel tracker data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  // Fetch city and state based on pincode
+  useEffect(() => {
+    const fetchPincodeData = async () => {
+      if (formData.pincode.length === 6) {
+        try {
+          const response = await fetch(
+            `https://api.postalpincode.in/pincode/${formData.pincode}`
+          );
+          const data = await response.json();
+          if (data[0].Status === "Success" && data[0].PostOffice.length > 0) {
+            const { State, District } = data[0].PostOffice[0];
+            handleInputChange("state", State);
+            handleInputChange("city", District);
+          } else {
+            handleInputChange("state", "");
+            handleInputChange("city", "");
+          }
+        } catch (error) {
+          console.error("Error fetching pincode data:", error);
+          handleInputChange("state", "");
+          handleInputChange("city", "");
+        }
+      } else {
+        handleInputChange("state", "");
+        handleInputChange("city", "");
+      }
+    };
+    fetchPincodeData();
+  }, [formData.pincode]);
+
+  const handleSave = async () => {
+    const payload = {
+      enquiry_no: formData.enquiryNo,
+      lead_date: formData.leadDate,
+      funnel_status: formData.funnelStatus,
+      action: formData.action,
+      last_follow_up_date: formData.lastFollowUpDate,
+      next_follow_up_date: formData.nextFollowUpDate,
+      lost_order_date: formData.lostOrderDate,
+      comments: formData.followUpNotes,
+      prospect: formData.prospect,
+      contact_person: formData.contactPerson,
+      email: formData.email,
+      mobile_number: formData.mobileNumber,
+      department: formData.department,
+      designation: formData.designation,
+      address_line_1: formData.addressLine1,
+      landmark: formData.landmark,
+      street: formData.street,
+      state: formData.state,
+      city: formData.city,
+      pincode: formData.pincode,
+      quotation_date: formData.quotationDate,
+      quotation_no: formData.quotationNo,
+      quotation_value: parseFloat(formData.quotationValue) || 0,
+      closure_target: formData.closureTarget,
+      lead_source: formData.leadSource,
+      event_date: formData.eventDate,
+      event_location: formData.eventLocation,
+      service: formData.service,
+      bde: formData.bde,
+      client_servicing_person: formData.clientServicingPerson,
+      briefs: formData.briefs,
+      active_status: formData.activeStatus,
+    };
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/funnel-tracker/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      console.log("Lead updated:", await response.json());
+      navigate("/funnel-review");
+    } catch (error) {
+      console.error("Error updating funnel tracker data:", error);
+      setError("Failed to update funnel tracker data. Please try again.");
+    }
   };
 
   const handleCancel = () => {
-    navigate('/funnel-review');
+    navigate("/funnel-review");
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-lg font-medium text-gray-900">Loading Funnel Tracker Data...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen p-6">
+        <div className="text-red-500 text-lg font-medium mb-4">{error}</div>
+        <button
+          onClick={() => window.location.reload()}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Edit Funnel Tracker</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          Edit Funnel tracker
+        </h1>
         <div className="flex gap-3">
-          <button 
+          <button
             onClick={handleCancel}
             className="bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 px-6 py-2 rounded-md font-medium"
           >
             Cancel
           </button>
-          <button 
-            onClick={handleUpdate}
+          <button
+            onClick={handleSave}
             className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md font-medium"
           >
-            Update
+            Save
           </button>
         </div>
       </div>
@@ -166,24 +283,34 @@ const EditFunnelReview = () => {
         <div className="space-y-8">
           {/* Basic Lead Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Basic Lead Details</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Basic Lead Details
+            </h2>
+
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Enquiry No</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Enquiry No
+                </label>
                 <input
                   type="text"
                   value={formData.enquiryNo}
-                  onChange={(e) => handleInputChange('enquiryNo', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("enquiryNo", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Lead Date*</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Lead Date*
+                </label>
                 <input
-                  type="text"
+                  type="date"
                   value={formData.leadDate}
-                  onChange={(e) => handleInputChange('leadDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("leadDate", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
@@ -191,10 +318,14 @@ const EditFunnelReview = () => {
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Funnel Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Funnel Status
+                </label>
                 <select
                   value={formData.funnelStatus}
-                  onChange={(e) => handleInputChange('funnelStatus', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("funnelStatus", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="">Select</option>
@@ -204,10 +335,12 @@ const EditFunnelReview = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Action
+                </label>
                 <select
                   value={formData.action}
-                  onChange={(e) => handleInputChange('action', e.target.value)}
+                  onChange={(e) => handleInputChange("action", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="">Select</option>
@@ -220,33 +353,45 @@ const EditFunnelReview = () => {
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Follow-up Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Follow-up Date
+                </label>
                 <input
-                  type="text"
+                  type="date"
                   placeholder="Enter"
                   value={formData.lastFollowUpDate}
-                  onChange={(e) => handleInputChange('lastFollowUpDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("lastFollowUpDate", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Next Follow-up Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Next Follow-up Date
+                </label>
                 <input
-                  type="text"
+                  type="date"
                   placeholder="Enter"
                   value={formData.nextFollowUpDate}
-                  onChange={(e) => handleInputChange('nextFollowUpDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("nextFollowUpDate", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Lost/Order Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Lost/Order Date
+              </label>
               <input
-                type="text"
+                type="date"
                 value={formData.lostOrderDate}
-                onChange={(e) => handleInputChange('lostOrderDate', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("lostOrderDate", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
@@ -254,36 +399,51 @@ const EditFunnelReview = () => {
 
           {/* Follow Up Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Follow Up Details</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Follow Up Details
+            </h2>
+
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Follow-up Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Follow-up Date
+                </label>
                 <input
-                  type="text"
+                  type="date"
                   placeholder="Enter"
                   value={formData.followUpLastDate}
-                  onChange={(e) => handleInputChange('followUpLastDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("followUpLastDate", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Next Follow-up Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Next Follow-up Date
+                </label>
                 <input
-                  type="text"
+                  type="date"
                   value={formData.followUpNextDate}
-                  onChange={(e) => handleInputChange('followUpNextDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("followUpNextDate", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Follow Up Notes</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
               <textarea
                 rows="3"
                 value={formData.followUpNotes}
-                onChange={(e) => handleInputChange('followUpNotes', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("followUpNotes", e.target.value)
+                }
+                placeholder="Enter description"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
@@ -291,44 +451,62 @@ const EditFunnelReview = () => {
 
           {/* Customer Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Customer Details</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Customer Details
+            </h2>
+
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Prospect</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Prospect
+              </label>
               <input
                 type="text"
                 value={formData.prospect}
-                onChange={(e) => handleInputChange('prospect', e.target.value)}
+                onChange={(e) => handleInputChange("prospect", e.target.value)}
+                placeholder="Enter prospect name"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Contact Person
+              </label>
               <input
                 type="text"
                 value={formData.contactPerson}
-                onChange={(e) => handleInputChange('contactPerson', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("contactPerson", e.target.value)
+                }
+                placeholder="Enter contact person name"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email ID*</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email ID*
+                </label>
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  placeholder="Enter email address"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number*</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mobile Number*
+                </label>
                 <input
                   type="tel"
                   value={formData.mobileNumber}
-                  onChange={(e) => handleInputChange('mobileNumber', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("mobileNumber", e.target.value)
+                  }
+                  placeholder="Enter mobile number"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
@@ -336,20 +514,30 @@ const EditFunnelReview = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Department
+                </label>
                 <input
                   type="text"
                   value={formData.department}
-                  onChange={(e) => handleInputChange('department', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("department", e.target.value)
+                  }
+                  placeholder="Enter department"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Designation
+                </label>
                 <input
                   type="text"
                   value={formData.designation}
-                  onChange={(e) => handleInputChange('designation', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("designation", e.target.value)
+                  }
+                  placeholder="Enter designation"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
@@ -358,77 +546,93 @@ const EditFunnelReview = () => {
 
           {/* Address */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Address</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Address
+            </h2>
+
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address line 1</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address line 1
+              </label>
               <input
                 type="text"
+                placeholder="Enter Address Line 1"
                 value={formData.addressLine1}
-                onChange={(e) => handleInputChange('addressLine1', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("addressLine1", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">LandMark*</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Landmark*
+                </label>
                 <input
                   type="text"
+                  placeholder="Enter Landmark"
                   value={formData.landmark}
-                  onChange={(e) => handleInputChange('landmark', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("landmark", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Street*</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Street*
+                </label>
                 <input
                   type="text"
                   placeholder="Enter Street"
                   value={formData.street}
-                  onChange={(e) => handleInputChange('street', e.target.value)}
+                  onChange={(e) => handleInputChange("street", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">State*</label>
-                <select
-                  value={formData.state}
-                  onChange={(e) => handleInputChange('state', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                >
-                  <option value="">Select</option>
-                  <option value="maharashtra">Maharashtra</option>
-                  <option value="karnataka">Karnataka</option>
-                  <option value="tamil-nadu">Tamil Nadu</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">City*</label>
-                <select
-                  value={formData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                >
-                  <option value="">Select</option>
-                  <option value="mumbai">Mumbai</option>
-                  <option value="bangalore">Bangalore</option>
-                  <option value="chennai">Chennai</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pincode*</label>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Pincode*
+              </label>
               <input
                 type="text"
+                placeholder="Enter Pincode"
                 value={formData.pincode}
-                onChange={(e) => handleInputChange('pincode', e.target.value)}
+                onChange={(e) => handleInputChange("pincode", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                maxLength={6}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  State*
+                </label>
+                <input
+                  type="text"
+                  value={formData.state}
+                  readOnly
+                  placeholder="Auto-filled"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City*
+                </label>
+                <input
+                  type="text"
+                  value={formData.city}
+                  readOnly
+                  placeholder="Auto-filled"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -437,46 +641,64 @@ const EditFunnelReview = () => {
         <div className="space-y-8">
           {/* Quotation Details */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Quotation Details</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Quotation Details
+            </h2>
+
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quotation Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Quotation Date
+              </label>
               <input
-                type="text"
+                type="date"
                 value={formData.quotationDate}
-                onChange={(e) => handleInputChange('quotationDate', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("quotationDate", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Quotation V No</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Quotation V No
+                </label>
                 <input
                   type="text"
                   value={formData.quotationNo}
-                  onChange={(e) => handleInputChange('quotationNo', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("quotationNo", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Quotation Value</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Quotation Value
+                </label>
                 <input
                   type="text"
                   value={formData.quotationValue}
-                  onChange={(e) => handleInputChange('quotationValue', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("quotationValue", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Closure Target</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Closure Target
+              </label>
               <input
                 type="text"
                 placeholder="Enter Closure Target"
                 value={formData.closureTarget}
-                onChange={(e) => handleInputChange('closureTarget', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("closureTarget", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
@@ -484,47 +706,63 @@ const EditFunnelReview = () => {
 
           {/* Lead Qualification */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Lead Qualification</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Lead Qualification
+            </h2>
+
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Lead Source</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Lead Source
+              </label>
               <input
                 type="text"
                 placeholder="Enter Lead Source"
                 value={formData.leadSource}
-                onChange={(e) => handleInputChange('leadSource', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("leadSource", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Event Date</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Event Date
+                </label>
                 <input
-                  type="text"
+                  type="date"
                   value={formData.eventDate}
-                  onChange={(e) => handleInputChange('eventDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("eventDate", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Event Location</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Event Location
+                </label>
                 <input
                   type="text"
                   value={formData.eventLocation}
-                  onChange={(e) => handleInputChange('eventLocation', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("eventLocation", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Service</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Service
+              </label>
               <input
                 type="text"
                 placeholder="Enter Service"
                 value={formData.service}
-                onChange={(e) => handleInputChange('service', e.target.value)}
+                onChange={(e) => handleInputChange("service", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
@@ -532,13 +770,17 @@ const EditFunnelReview = () => {
 
           {/* Internal Assignment */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Internal Assignment</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Internal Assignment
+            </h2>
+
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">BDE</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                BDE
+              </label>
               <select
                 value={formData.bde}
-                onChange={(e) => handleInputChange('bde', e.target.value)}
+                onChange={(e) => handleInputChange("bde", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">Select</option>
@@ -549,10 +791,14 @@ const EditFunnelReview = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Client Servicing Person</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Client Servicing Person
+              </label>
               <select
                 value={formData.clientServicingPerson}
-                onChange={(e) => handleInputChange('clientServicingPerson', e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("clientServicingPerson", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               >
                 <option value="">Select</option>
@@ -565,26 +811,32 @@ const EditFunnelReview = () => {
 
           {/* Additional Briefs & Comments */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Additional Briefs & Comments</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Additional Briefs & Comments
+            </h2>
+
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Briefs</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Briefs
+              </label>
               <textarea
                 rows="3"
                 placeholder="Enter Brief"
                 value={formData.briefs}
-                onChange={(e) => handleInputChange('briefs', e.target.value)}
+                onChange={(e) => handleInputChange("briefs", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Comments</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Comments
+              </label>
               <textarea
                 rows="3"
                 placeholder="Enter Comments"
                 value={formData.comments}
-                onChange={(e) => handleInputChange('comments', e.target.value)}
+                onChange={(e) => handleInputChange("comments", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
@@ -592,19 +844,25 @@ const EditFunnelReview = () => {
 
           {/* Control */}
           <div className="bg-white p-6 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Control:</h2>
-            
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">
+              Control:
+            </h2>
+
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700">Active Status*</label>
-              <div 
-                onClick={() => handleInputChange('activeStatus', !formData.activeStatus)}
+              <label className="text-sm font-medium text-gray-700">
+                Active Status*
+              </label>
+              <div
+                onClick={() =>
+                  handleInputChange("activeStatus", !formData.activeStatus)
+                }
                 className={`relative w-12 h-6 rounded-full cursor-pointer transition-colors ${
-                  formData.activeStatus ? 'bg-orange-500' : 'bg-gray-300'
+                  formData.activeStatus ? "bg-orange-500" : "bg-gray-300"
                 }`}
               >
-                <div 
+                <div
                   className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                    formData.activeStatus ? 'translate-x-6' : 'translate-x-0'
+                    formData.activeStatus ? "translate-x-6" : "translate-x-0"
                   }`}
                 />
               </div>

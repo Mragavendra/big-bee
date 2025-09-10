@@ -6,7 +6,6 @@ import Layout from './layouts/Layout';
 import Dashboard from './pages/mainmenu/dashboardfold/Dashboard';
 import LeadCapture from './pages/crm/LeadCapture/LeadCapture';
 import AddLeadsFormLayout from './pages/crm/LeadCapture/AddLeadsFormLayout';
-import EditLeadsFormLayoutForm from './pages/crm/LeadCapture/EditLeadsFormLayout';
 import FunnelReview from './pages/crm/funnelreview/FunnelReview';
 import AddFunnelReview from './pages/crm/funnelreview/AddFunnelReview';
 import EditFunnelReview from './pages/crm/funnelreview/EditFunnelReview';
@@ -74,6 +73,7 @@ import MarketingChannelEdit from './pages/settings/marketingchannel/MarketingCha
 // New Login and Signup imports
 import Login from './logins/Login.jsx';
 import Signup from './logins/Signup.jsx';
+import EditLeadsFormLayout from './pages/crm/LeadCapture/EditLeadsFormLayout.jsx';
 
 function App() {
   return (
@@ -87,7 +87,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/lead-capture" element={<LeadCapture />} />
         <Route path="/lead-capture/add" element={<AddLeadsFormLayout />} />
-        <Route path="/lead-capture/edit/:id" element={<EditLeadsFormLayoutForm />} />
+        <Route path="/lead-capture/edit/:id" element={<EditLeadsFormLayout />} />
         <Route path="/funnel-review" element={<FunnelReview />} />
         <Route path="/funnel-review/add" element={<AddFunnelReview />} />
         <Route path="/funnel-review/edit/:id" element={<EditFunnelReview />} />
@@ -130,7 +130,7 @@ function App() {
         <Route path="/settings/category/add" element={<CategoryAdd />} />
         <Route path="/settings/category/edit/:id" element={<CategoryEdit />} />
         <Route path="/settings/action" element={<ActionTable />} />
-        <Route path="/settings/action/add" element={<ActionAdd />} />
+        <Route path="/settings/action/add" route element={<ActionAdd />} />
         <Route path="/settings/action/edit/:id" element={<ActionEdit />} />
         <Route path="/settings/status" element={<StatusTable />} />
         <Route path="/settings/status/add" element={<StatusAdd />} />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Tabs,
@@ -13,18 +13,27 @@ import {
   TableRow,
   Card,
   CardContent,
+  CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import DynamicTable from "../../../table/DynamicTable";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 // Billing columns (with link)
 const billingColumns = [
   {
     id: "billingId",
     label: "Billing Id",
     align: "left",
-    render: (val) => (
+    render: (val, row) => (
       <a
         href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          row.navigate(`/performance-mis/${row.id}`);
+        }}
         style={{
           color: "#ee7110",
           textDecoration: "underline",
@@ -49,45 +58,7 @@ const billingColumns = [
   { id: "creditNote", label: "Credit Note", align: "right" },
   { id: "balanceAfterTds", label: "Balance After TDS", align: "right" },
 ];
-// Billing data
-const billingData = [
-  {
-    id: 1,
-    billingId: "BO1",
-    projectName: "Bewakoof Brands Pvt Ltd",
-    bdLead: "Admin",
-    en: "E_001",
-    month: "May 2025",
-    invoiceDate: "24-05-2025",
-    basic: 25414,
-    taxes: 4574,
-    totalAmt: 29990,
-    collected: 29990,
-    balance: 0,
-    tds: 0,
-    creditNote: 0,
-    balanceAfterTds: 0,
-    status: "Active",
-  },
-  {
-    id: 2,
-    billingId: "BO2",
-    projectName: "Reliance retail limited",
-    bdLead: "Admin",
-    en: "E_001",
-    month: "April 2025",
-    invoiceDate: "24-05-2025",
-    basic: 41400,
-    taxes: 7452,
-    totalAmt: 48852,
-    collected: 48852,
-    balance: 0,
-    tds: 0,
-    creditNote: 0,
-    balanceAfterTds: 0,
-    status: "Active",
-  },
-];
+
 // BBC Analysis data - Monthly breakdown
 const bbcMonthlyData = [
   { month: "Apr", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
@@ -103,6 +74,7 @@ const bbcMonthlyData = [
   { month: "Feb", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
   { month: "Mar", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
 ];
+
 // BBC Quarterly data
 const bbcQuarterlyData = [
   { quarter: "Q1", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
@@ -110,6 +82,7 @@ const bbcQuarterlyData = [
   { quarter: "Q3", bookingGoal: "20,00,000", bookingActual: "10,00,000", bookingGap: 50, bookingAch: 50, billingGoal: 50, billingActual: 50, billingGap: 50, billingAch: 50, collection: 0 },
   { quarter: "Q4", bookingGoal: 0, bookingActual: 0, bookingGap: 0, bookingAch: 0, billingGoal: 0, billingActual: 0, billingGap: 0, billingAch: 0, collection: 0 },
 ];
+
 // YOY Analysis data - monthly
 const yoyMonthlyData = [
   { month: "Apr", fy2526: { billing: 0, growth: 0, growthPercent: 0 }, fy2425: { billing: 0, growth: 0, growthPercent: 0 }, fy2324: { billing: 0, growth: 0, growthPercent: 0 }, fy2223: { billing: 0, growth: 0, growthPercent: 0 } },
@@ -120,6 +93,8 @@ const yoyMonthlyData = [
   { month: "Sep", fy2526: { billing: 0, growth: 0, growthPercent: 0 }, fy2425: { billing: 0, growth: 0, growthPercent: 0 }, fy2324: { billing: 0, growth: 0, growthPercent: 0 }, fy2223: { billing: 0, growth: 0, growthPercent: 0 } },
   { month: "Oct", fy2526: { billing: 0, growth: 0, growthPercent: 0 }, fy2425: { billing: 0, growth: 0, growthPercent: 0 }, fy2324: { billing: 0, growth: 0, growthPercent: 0 }, fy2223: { billing: 0, growth: 0, growthPercent: 0 } },
 ];
+
+// TabPanel component
 function TabPanel({ children, value, index }) {
   return (
     <div role="tabpanel" hidden={value !== index}>
@@ -127,17 +102,87 @@ function TabPanel({ children, value, index }) {
     </div>
   );
 }
+
 const PerformanceMisTable = () => {
-  const [value, setValue] = useState(0);
   const navigate = useNavigate();
+  const [value, setValue] = useState(0);
+  const [billingData, setBillingData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  // Fetch billing data from API
+  useEffect(() => {
+    const fetchBillingData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/performance");
+        // Map API response to table data format
+        const mappedData = response.data.data.map((item) => ({
+          id: item.id,
+          billingId: item.billing_no,
+          projectName: item.project_name,
+          bdLead: item.bd_lead || "Admin", // Default to "Admin" if not provided
+          en: item.enquiry_no,
+          month: item.month || new Date(item.invoice_date).toLocaleString('default', { month: 'long', year: 'numeric' }), // Derive month if not provided
+          invoiceDate: item.invoice_date.split("T")[0], // Format date as YYYY-MM-DD
+          basic: item.basic_amt,
+          taxes: item.tax,
+          totalAmt: item.total_amt,
+          collected: item.total_collected_amt,
+          balance: item.balance,
+          tds: item.tds_amount,
+          creditNote: item.credit_note,
+          balanceAfterTds: item.balance_after_tds,
+          status: item.status || "Active", // Default to "Active" if not provided
+          navigate, // Pass navigate for link rendering
+        }));
+        setBillingData(mappedData);
+        setSnackbar({
+          open: true,
+          message: "Billing data loaded successfully",
+          severity: "success",
+        });
+      } catch (error) {
+        console.error("Error fetching billing data:", error);
+        setSnackbar({
+          open: true,
+          message: "Failed to load billing data",
+          severity: "error",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBillingData();
+  }, []);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
   const handleAddNew = () => {
     navigate("/performance-mis/add");
   };
+
+  const handleSnackbarClose = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   return (
     <Box>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           display: 'inline-flex',
@@ -235,36 +280,41 @@ const PerformanceMisTable = () => {
       </Box>
       {/* Billing Tab */}
       <TabPanel value={value} index={0}>
-        <DynamicTable
-          columns={billingColumns}
-          data={billingData}
-          title="Billing Overview"
-          rowsPerPage={10}
-          addButtonLabel="+ Add Billing Entry"
-          disableEdit={false}
-          disableDelete={false}
-          disableView={true}
-          searchPlaceholder="Search for billing records..."
-          categoryLabel="All BD Leads"
-          statusLabel="All Status"
-          showAssignColumn={false}
-          showOverallStatus={false}
-          showExtraOverallStatus={false}
-          showActionColumn={false}
-          headerButtons={[
-          ]}
-          addButtonProps={{
-            variant: "contained",
-            sx: {
-              backgroundColor: "#ee7110",
-              "&:hover": {
-                backgroundColor: "#d45a0a",
+        {loading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+            <CircularProgress />
+          </Box>
+        ) : (
+          <DynamicTable
+            columns={billingColumns}
+            data={billingData}
+            title="Billing Overview"
+            rowsPerPage={10}
+            addButtonLabel="+ Add Billing Entry"
+            disableEdit={false}
+            disableDelete={false}
+            disableView={true}
+            searchPlaceholder="Search for billing records..."
+            categoryLabel="All BD Leads"
+            statusLabel="All Status"
+            showAssignColumn={false}
+            showOverallStatus={false}
+            showExtraOverallStatus={false}
+            showActionColumn={false}
+            headerButtons={[]}
+            addButtonProps={{
+              variant: "contained",
+              sx: {
+                backgroundColor: "#ee7110",
+                "&:hover": {
+                  backgroundColor: "#d45a0a",
+                },
               },
-            },
-          }}
-          statusField="status"
-          categoryField="bdLead"
-        />
+            }}
+            statusField="status"
+            categoryField="bdLead"
+          />
+        )}
       </TabPanel>
       {/* BBC Tab */}
       <TabPanel value={value} index={1}>
@@ -300,7 +350,6 @@ const PerformanceMisTable = () => {
                   <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', backgroundColor: '#f5f5f5', fontSize: '0.75rem' }}>Billing Goal</TableCell>
                   <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', backgroundColor: '#f5f5f5', fontSize: '0.75rem' }}>Actual</TableCell>
                   <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', backgroundColor: '#f5f5f5', fontSize: '0.75rem' }}>Gap</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', backgroundColor: '#f5f5f5', fontSize: '0.75rem' }}>Bar Analysis</TableCell>
                   <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', backgroundColor: '#f5f5f5', fontSize: '0.75rem' }}>Ach %</TableCell>
                 </TableRow>
               </TableHead>
@@ -626,7 +675,6 @@ const PerformanceMisTable = () => {
                     </TableRow>
                   );
                 })}
-                {/* Total Row */}
                 <TableRow sx={{ backgroundColor: '#f9f9f9' }}>
                   <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Total</TableCell>
                   {Array(4 * 3).fill(0).map((_, idx) => (
@@ -636,10 +684,10 @@ const PerformanceMisTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          {/* Booking Details Section */}
         </Box>
       </TabPanel>
     </Box>
   );
 };
+
 export default PerformanceMisTable;

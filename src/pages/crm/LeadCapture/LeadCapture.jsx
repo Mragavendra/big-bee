@@ -74,6 +74,7 @@ const LeadCapture = () => {
       if (response.ok) {
         // Map API fields to table columns
         const mappedData = result.map((lead) => ({
+            id: lead.id,  // 🔥 required for edit navigation
           enquiryNo: lead.enquiry_no,
           leadDate: lead.lead_date,
           leadType: lead.lead_type,
@@ -104,7 +105,7 @@ const LeadCapture = () => {
       columns={columns}
       data={data}
       loading={loading}
-      rowsPerPage={5}
+      rowsPerPage={15}
       headerButtons={headerButtons}
       addButtonLabel="Add Leads"
       addButtonProps={{

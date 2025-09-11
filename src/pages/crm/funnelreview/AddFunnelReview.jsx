@@ -779,5 +779,4 @@ const AddFunnelTracker = () => {
     </div>
   );
 };
-
 export default AddFunnelTracker;

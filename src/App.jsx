@@ -19,7 +19,6 @@ import Meeting from './pages/performance&activity/meetingfold/Meeting';
 import ProfitabilityAnalysis from './pages/projectfinancials/profitabilityanalysis/ProfitabilityAnalysis';
 import ProfitabilitySummaryAdd from './pages/projectfinancials/profitabilityanalysis/ProfitabilitySummaryAdd';
 import ProfitabilitySummaryEdit from './pages/projectfinancials/profitabilityanalysis/ProfitabilitySummaryEdit';
-import FinancialMis from './pages/projectfinancials/financialmis/FinancialMis';
 import FinancialMisAdd from './pages/projectfinancials/financialmis/FinancialMisAdd';
 import FinancialMisEdit from './pages/projectfinancials/financialmis/FinancialMisEdit';
 import PerformanceMisTable from './pages/projectfinancials/performancemis/PerformanceMisTable';
@@ -74,6 +73,7 @@ import MarketingChannelEdit from './pages/settings/marketingchannel/MarketingCha
 import Login from './logins/Login.jsx';
 import Signup from './logins/Signup.jsx';
 import EditLeadsFormLayout from './pages/crm/LeadCapture/EditLeadsFormLayout.jsx';
+import FinancialMis from './pages/projectfinancials/financialmis/FinancialMis.jsx';
 
 function App() {
   return (

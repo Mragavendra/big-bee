@@ -92,6 +92,7 @@ const LeadSourceTable = () => {
         columns={columns}
         data={data}
         rowsPerPage={10}
+        apiEndpoint="http://localhost:5000/api/lead-sources"
         headerButtons={headerButtons}
         addButtonLabel="Add Lead Source"
         addButtonProps={{

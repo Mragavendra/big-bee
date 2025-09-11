@@ -5,7 +5,6 @@ import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 
 const MarketingChannelTable = () => {
@@ -70,6 +69,7 @@ const MarketingChannelTable = () => {
       columns={columns}
       data={data}
       rowsPerPage={10}
+      apiEndpoint="http://localhost:5000/api/marketing-channels"
       headerButtons={headerButtons}
       searchPlaceholder="Search marketing channels"
       categoryLabel="All Category"
@@ -89,17 +89,6 @@ const MarketingChannelTable = () => {
               sx={{ color: '#1976d2' }}
             >
               <EditIcon fontSize="small" />
-            </IconButton>
-          ),
-        },
-        deleteButton: {
-          render: (row) => (
-            <IconButton 
-              size="small"
-              onClick={() => console.log('Delete', row.id)}
-              sx={{ color: '#d32f2f' }}
-            >
-              <DeleteIcon fontSize="small" />
             </IconButton>
           ),
         },

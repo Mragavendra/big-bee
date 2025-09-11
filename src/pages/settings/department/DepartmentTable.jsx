@@ -114,6 +114,7 @@ const DepartmentTable = () => {
       columns={columns}
       data={data}
       rowsPerPage={5}
+      apiEndpoint="http://localhost:5000/api/departments"
       headerButtons={headerButtons}
       addButtonLabel="Add Department"
       addButtonProps={{

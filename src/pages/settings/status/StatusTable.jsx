@@ -48,6 +48,7 @@ const StatusTable = () => {
       columns={columns}
       data={data}
       rowsPerPage={5}
+      apiEndpoint="http://localhost:5000/api/status"
       headerButtons={headerButtons}
       addButtonLabel="Add Status"
       addButtonProps={{ 

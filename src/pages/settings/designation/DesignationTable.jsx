@@ -74,6 +74,7 @@ const DesignationTable = () => {
       columns={columns}
       data={data}
       rowsPerPage={10}
+      apiEndpoint="http://localhost:5000/api/designations"
       headerButtons={headerButtons}
       addButtonLabel="Add Designation"
       addButtonProps={{ 

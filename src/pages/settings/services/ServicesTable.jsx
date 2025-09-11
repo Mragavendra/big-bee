@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import DynamicTable from '../../../table/DynamicTable';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import axios from 'axios';
 
 const ServicesTable = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const ServicesTable = () => {
   // Fetch services from API
   const fetchServices = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/services'); // Your GET API endpoint
+      const response = await axios.get('http://localhost:5000/api/services');
       setServices(
         response.data.map((item, index) => ({
           id: item.id,
@@ -24,7 +24,7 @@ const ServicesTable = () => {
           service: item.service_type,
           description: item.description,
           status: item.is_active ? 'Active' : 'Inactive',
-          category: item.category || 'General', // optional
+          category: item.category || 'General',
         }))
       );
     } catch (error) {
@@ -69,6 +69,7 @@ const ServicesTable = () => {
       columns={columns}
       data={services}
       rowsPerPage={10}
+      apiEndpoint="http://localhost:5000/api/services"
       headerButtons={headerButtons}
       searchPlaceholder="Search for item"
       categoryLabel="All Category"
@@ -83,22 +84,11 @@ const ServicesTable = () => {
         editButton: {
           render: (row) => (
             <IconButton 
-              size="small"
+              size="small"                                                    
               onClick={() => navigate(`${location.pathname}/edit/${row.id}`)}
               sx={{ color: '#1976d2' }}
             >
               <EditIcon fontSize="small" />
-            </IconButton>
-          ),
-        },
-        deleteButton: {
-          render: (row) => (
-            <IconButton 
-              size="small"
-              onClick={() => console.log('Delete', row.id)}
-              sx={{ color: '#d32f2f' }}
-            >
-              <DeleteIcon fontSize="small" />
             </IconButton>
           ),
         },

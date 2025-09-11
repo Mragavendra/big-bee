@@ -74,6 +74,7 @@ const ActionTable = () => {
       columns={columns}
       data={data}
       rowsPerPage={10}
+      apiEndpoint="http://localhost:5000/api/actions"
       headerButtons={headerButtons}
       addButtonLabel="Add Funnel Stage"
       addButtonProps={{ 

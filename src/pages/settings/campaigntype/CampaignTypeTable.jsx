@@ -1,4 +1,3 @@
-// src/pages/settings/campaign-type/CampaignTypeTable.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -75,6 +74,7 @@ const CampaignTypeTable = () => {
       columns={columns}
       data={data}
       rowsPerPage={10}
+      apiEndpoint="http://localhost:5000/api/campaign-types"
       headerButtons={headerButtons}
       searchPlaceholder="Search for item"
       categoryLabel="All Category"
@@ -102,7 +102,16 @@ const CampaignTypeTable = () => {
           render: (row) => (
             <IconButton 
               size="small"
-              onClick={() => console.log('Delete', row.id)}
+              onClick={() => {
+                setData((prev) => prev.filter((item) => item.id !== row.id));
+                axios.delete(`http://localhost:5000/api/campaign-types/${row.id}`)
+                  .then(() => console.log(`Deleted campaign type with id ${row.id}`))
+                  .catch((error) => {
+                    console.error('Error deleting campaign type:', error);
+                    // Optionally, revert state if delete fails
+                    setData((prev) => [...prev, row]);
+                  });
+              }}
               sx={{ color: '#d32f2f' }}
             >
               <DeleteIcon fontSize="small" />

@@ -74,6 +74,7 @@ const CategoryTable = () => {
       columns={columns}
       data={loading ? [] : data}
       rowsPerPage={10}
+      apiEndpoint="http://localhost:5000/api/categories"
       headerButtons={headerButtons}
       addButtonLabel="Add Category"
       addButtonProps={{

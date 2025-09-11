@@ -81,6 +81,7 @@ const FollowUpModeTable = () => {
         columns={columns}
         data={data}
         rowsPerPage={5}
+        apiEndpoint="http://localhost:5000/api/followup-modes"
         headerButtons={headerButtons}
         addButtonLabel="Add FollowUp Mode"
         addButtonProps={{

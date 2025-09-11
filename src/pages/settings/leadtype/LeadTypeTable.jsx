@@ -74,6 +74,7 @@ const LeadTypeTable = () => {
       data={data}
       loading={loading}
       rowsPerPage={5}
+      apiEndpoint="http://localhost:5000/api/lead-types"
       headerButtons={headerButtons}
       addButtonLabel=" Add Lead Type"
       addButtonProps={{ 

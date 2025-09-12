@@ -1,4 +1,3 @@
-
 import React from 'react'; 
 import { useState } from "react";
 import { login } from "../api/auth";
@@ -12,6 +11,8 @@ import {
   FormControlLabel,
   InputAdornment,
   IconButton,
+  Alert,
+  CircularProgress
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import leftImage from "../assets/leftside.png"; // Adjust path accordingly
@@ -21,16 +22,43 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [keepSignedIn, setKeepSignedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+    
     try {
       const data = await login(email, password);
       localStorage.setItem("token", data.token);
-      navigate("/dashboard");
+      localStorage.setItem("userRole", data.role); // Store the role
+      
+      // Redirect based on user role
+      if (data.role === 'admin') {
+        navigate("/admin-dashboard");
+      } else if (data.role === 'marketing') {
+        navigate("/marketing-dashboard");
+      } else if (data.role === 'business_dev') {
+        navigate("/business-dev-dashboard");
+      } else if (data.role === 'client_servicing') {
+        navigate("/client-servicing-dashboard");
+      } else if (data.role === 'creative') {
+        navigate("/creative-dashboard");
+      } else if (data.role === 'operations') {
+        navigate("/operations-dashboard");
+      } else {
+        // Default redirect if role is not recognized
+        navigate("/dashboard");
+      }
     } catch (err) {
-      console.error(err.response?.data?.message || "Error");
+      const errorMessage = err.response?.data?.message || "Login failed. Please try again.";
+      setError(errorMessage);
+      console.error("Login error:", errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,7 +72,7 @@ export default function Login() {
         padding: 0,
         margin: 0,
         overflow: "hidden",
-        gap: 0, // no gap between flex items
+        gap: 0,
       }}
     >
       {/* Left Image Side */}
@@ -57,6 +85,9 @@ export default function Login() {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           overflow: "hidden",
+          '@media (max-width: 900px)': {
+            display: 'none'
+          }
         }}
       />
 
@@ -64,6 +95,7 @@ export default function Login() {
       <Box
         sx={{
           flex: 1,
+          minWidth: '300px',
           height: "100vh",
           display: "flex",
           flexDirection: "column",
@@ -71,16 +103,25 @@ export default function Login() {
           alignItems: "center",
           padding: 4,
           backgroundColor: "#fff",
-          overflow: "hidden",
+          overflow: "auto",
         }}
       >
         <Typography
-          variant="h5"
+          variant="h4"
           align="center"
           gutterBottom
-          sx={{ fontWeight: "bold", mb: 4, color: "#333" }}
+          sx={{ 
+            fontWeight: "bold", 
+            mb: 4, 
+            color: "#333",
+            background: 'linear-gradient(45deg, #ff5722 30%, #ff8a65 90%)',
+            backgroundClip: 'text',
+            textFillColor: 'transparent',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
         >
-          Login
+          Welcome Back
         </Typography>
 
         <Box
@@ -90,18 +131,25 @@ export default function Login() {
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            maxWidth: 300,
             width: "100%",
+            maxWidth: 400,
           }}
         >
+          {error && (
+            <Alert severity="error" sx={{ width: '100%' }}>
+              {error}
+            </Alert>
+          )}
+          
           <TextField
-            label="Email address*"
+            label="Email address"
             type="email"
             variant="outlined"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             fullWidth
+            disabled={loading}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": { borderColor: "#ccc" },
@@ -110,14 +158,16 @@ export default function Login() {
               },
             }}
           />
+          
           <TextField
-            label="Password*"
+            label="Password"
             type={showPassword ? "text" : "password"}
             variant="outlined"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             fullWidth
+            disabled={loading}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -125,6 +175,7 @@ export default function Login() {
                     aria-label="toggle password visibility"
                     onClick={() => setShowPassword(!showPassword)}
                     edge="end"
+                    disabled={loading}
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
@@ -139,31 +190,91 @@ export default function Login() {
               },
             }}
           />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={keepSignedIn}
-                onChange={(e) => setKeepSignedIn(e.target.checked)}
-                sx={{ color: "#ff5722", "&.Mui-checked": { color: "#ff5722" } }}
-              />
-            }
-            label="Keep me signed in"
-          />
+          
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+              flexWrap: 'wrap',
+              gap: 1
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={keepSignedIn}
+                  onChange={(e) => setKeepSignedIn(e.target.checked)}
+                  disabled={loading}
+                  sx={{ color: "#ff5722", "&.Mui-checked": { color: "#ff5722" } }}
+                />
+              }
+              label="Keep me signed in"
+            />
+            
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#ff5722",
+                cursor: "pointer",
+                "&:hover": { textDecoration: "underline" },
+              }}
+              onClick={() => navigate("/signup")}
+            >
+              Create Account
+            </Typography>
+          </Box>
+          
           <Button
             type="submit"
             variant="contained"
             fullWidth
+            disabled={loading}
             sx={{
               backgroundColor: "#ff5722",
               color: "#fff",
               textTransform: "uppercase",
-              padding: "10px",
-              borderRadius: 8,
-              "&:hover": { backgroundColor: "#e64a19" },
+              padding: "12px",
+              borderRadius: 2,
+              "&:hover": { 
+                backgroundColor: "#e64a19",
+                transform: "translateY(-2px)",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.2)"
+              },
+              "&:disabled": {
+                backgroundColor: "#ffab91"
+              },
+              transition: "all 0.2s ease-in-out"
             }}
           >
-            LOGIN
+            {loading ? (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            ) : (
+              "LOGIN"
+            )}
           </Button>
+          
+          <Typography 
+            variant="body2" 
+            align="center" 
+            sx={{ 
+              mt: 2, 
+              color: "#757575",
+              cursor: "pointer",
+              "&:hover": { color: "#ff5722" }
+            }}
+            onClick={() => navigate("/forgot-password")}
+          >
+            Forgot your password?
+          </Typography>
+        </Box>
+        
+        {/* Demo credentials hint */}
+        <Box sx={{ mt: 4, p: 2, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+          <Typography variant="body2" sx={{ color: '#757575', textAlign: 'center' }}>
+            <strong>Demo:</strong> Try admin@example.com / marketing@example.com
+          </Typography>
         </Box>
       </Box>
     </Box>

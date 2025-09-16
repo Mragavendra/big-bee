@@ -10,53 +10,73 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  NotificationsNone as NotificationIcon,
+  Dashboard as DashboardIcon,
+  People as PeopleIcon,
+  Analytics as AnalyticsIcon,
+  Assessment as AssessmentIcon,
+  ShowChart as ShowChartIcon,
+  MeetingRoom as MeetingRoomIcon,
+  AttachMoney as AttachMoneyIcon,
   Settings as SettingsIcon,
   ExitToApp as ExitToAppIcon,
   ArrowBack as ArrowBackIcon,
-  Person as PersonIcon,
-  Work as WorkIcon,
-  Business as BusinessIcon,
-  Label as LabelIcon,
-  Source as SourceIcon,
-  Category as CategoryIcon,
-  PlayArrow as ActionIcon,
-  CheckCircle as StatusIcon,
-  Forum as FollowUpIcon,
-  RoomService as ServicesIcon,
-  Campaign as CampaignIcon,
-  Public as MarketingIcon
 } from "@mui/icons-material";
 import bigBeeLogo from "../assets/big-beelogo.svg";
 
-// Main menu sections
-const menuSections = [
+// Main menu sections for Admin
+const adminMenuSections = [
   {
     title: "Main menu",
-    items: [{ text: "Dashboard", path: "/dashboard", icon: NotificationIcon }],
+    items: [{ text: "Dashboard", path: "/admin-dashboard", icon: DashboardIcon }],
+  },
+  {
+  title: "CRM",
+  items: [
+    { text: "Lead Capture", path: "/lead-capture", icon: PeopleIcon },
+    { text: "Funnel Review", path: "/funnel-review", icon: AnalyticsIcon },
+    { text: "Marketing ROI Tracker", path: "/marketing-roi", icon: AssessmentIcon },
+    { text: "Order", path: "/order", icon: AssessmentIcon },
+  ],
+},
+{
+  title: "Performance & Activity",
+  items: [
+    { text: "KRA", path: "/kra", icon: ShowChartIcon },
+    { text: "Meeting", path: "/meeting", icon: MeetingRoomIcon },
+  ],
+},
+{
+  title: "Project Financials",
+  items: [
+    { text: "Profitability Analysis", path: "/profitability-analysis", icon: AttachMoneyIcon },
+    { text: "Financial MIS", path: "/financial-mis", icon: AssessmentIcon },
+    { text: "Performance MIS", path: "/performance-mis", icon: AnalyticsIcon },
+  ],
+},
+];
+
+// Main menu sections for Marketing (only 2-3 items)
+const marketingMenuSections = [
+  {
+    title: "Marketing Menu",
+    items: [
+      { text: "Dashboard", path: "/marketing-dashboard", icon: DashboardIcon },
+    ],
   },
   {
     title: "CRM",
     items: [
-      { text: "Lead Capture", path: "/lead-capture", icon: NotificationIcon },
-      { text: "Funnel Review", path: "/funnel-review", icon: NotificationIcon },
-      { text: "Marketing ROI Tracker", path: "/marketing-roi", icon: NotificationIcon },
-      { text: "Order", path: "/order", icon: NotificationIcon },
+      { text: "Lead Capture", path: "/marketing-lead-capture", icon: PeopleIcon },
+      { text: "Funnel Review", path: "/marketing-funnel-review", icon: AnalyticsIcon },
+      { text: "Marketing ROI Tracker", path: "/Marketing-ROI-Tracker", icon: AnalyticsIcon },
+      { text: "Order", path: "/Marketing-Order", icon: AnalyticsIcon },
     ],
   },
   {
     title: "Performance & Activity",
     items: [
-      { text: "KRA", path: "/kra", icon: NotificationIcon },
-      { text: "Meeting", path: "/meeting", icon: NotificationIcon },
-    ],
-  },
-  {
-    title: "Project Financials",
-    items: [
-      { text: "Profitability Analysis", path: "/profitability-analysis", icon: NotificationIcon },
-      { text: "Financial MIS", path: "/financial-mis", icon: NotificationIcon },
-      { text: "Performance MIS", path: "/performance-mis", icon: NotificationIcon },
+      { text: "KRA", path: "/marketing-KRA", icon: PeopleIcon },
+      { text: "Meeting", path: "/marketing-Meeting", icon: AnalyticsIcon },
     ],
   },
 ];
@@ -65,36 +85,47 @@ const menuSections = [
 const settingsMenu = [
   {
     label: "Exit Master",
-    path: "/dashboard",
-    icon: ArrowBackIcon, // This will remain ArrowBackIcon
+    path: "/admin-dashboard",
+    icon: ArrowBackIcon,
   },
 ];
 
 // Masters section
 const mastersItems = [
-  { label: "Employee Master", path: "/settings/employee-master", icon: NotificationIcon },
-  { label: "Designation", path: "/settings/designation", icon: NotificationIcon },
-  { label: "Department", path: "/settings/department", icon: NotificationIcon },
-  { label: "Lead Type", path: "/settings/lead-type", icon: NotificationIcon },
-  { label: "Lead Source", path: "/settings/lead-source", icon: NotificationIcon },
-  { label: "Category", path: "/settings/category", icon: NotificationIcon },
-  { label: "Action", path: "/settings/action", icon: NotificationIcon },
-  { label: "Status", path: "/settings/status", icon: NotificationIcon },
-  { label: "Follow Up Mode", path: "/settings/follow-up-mode", icon: NotificationIcon },
-  { label: "Company", path: "/settings/company", icon: NotificationIcon },
-  { label: "Services", path: "/settings/services", icon: NotificationIcon },
-  { label: "Campaign Type", path: "/settings/campaign-type", icon: NotificationIcon },
-  { label: "Type of Advertising", path: "/settings/type-of-advertising", icon: NotificationIcon },
-  { label: "Marketing Channel", path: "/settings/marketing-channel", icon: NotificationIcon },
+  { label: "Employee Master", path: "/settings/employee-master", icon: PeopleIcon },
+  { label: "Designation", path: "/settings/designation", icon: PeopleIcon },
+  { label: "Department", path: "/settings/department", icon: PeopleIcon },
+  { label: "Lead Type", path: "/settings/lead-type", icon: PeopleIcon },
+  { label: "Lead Source", path: "/settings/lead-source", icon: PeopleIcon },
+  { label: "Category", path: "/settings/category", icon: PeopleIcon },
+  { label: "Action", path: "/settings/action", icon: PeopleIcon },
+  { label: "Status", path: "/settings/status", icon: PeopleIcon },
+  { label: "Follow Up Mode", path: "/settings/follow-up-mode", icon: PeopleIcon },
+  { label: "Company", path: "/settings/company", icon: PeopleIcon },
+  { label: "Services", path: "/settings/services", icon: PeopleIcon },
+  { label: "Campaign Type", path: "/settings/campaign-type", icon: PeopleIcon },
+  { label: "Type of Advertising", path: "/settings/type-of-advertising", icon: PeopleIcon },
+  { label: "Marketing Channel", path: "/settings/marketing-channel", icon: PeopleIcon },
 ];
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isSettingsPage = location.pathname.startsWith("/settings");
+  
+  // Get user role from localStorage
+  const userRole = localStorage.getItem('userRole') || 'marketing';
+  const isMarketingUser = userRole === 'marketing';
 
   const handleNavigation = (path) => {
     navigate(path);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userEmail");
+    navigate("/");
   };
 
   return (
@@ -125,10 +156,11 @@ const Sidebar = () => {
           alt="BigBee Logo"
           style={{ height: "44px", userSelect: "none" }}
         />
+        <Typography variant="h6" sx={{ ml: 1, color: "#FF6A00", fontSize: "0.9rem" }}>
+        </Typography>
       </Box>
-
       {isSettingsPage ? (
-        // Settings menu view
+        // Settings menu view (same for all users)
         <Box>
           {/* Exit Master */}
           <List dense disablePadding>
@@ -145,9 +177,6 @@ const Sidebar = () => {
                       "&:hover": {
                         backgroundColor: "#f9f9f9",
                         transform: "translateX(4px)",
-                      },
-                      "&:active": {
-                        transform: "scale(0.98)",
                       },
                     }}
                   >
@@ -200,9 +229,6 @@ const Sidebar = () => {
                           backgroundColor: "#f9f9f9",
                           transform: "translateX(4px)",
                         },
-                        "&:active": {
-                          transform: "scale(0.98)",
-                        },
                         "&.Mui-selected": {
                           backgroundColor: "#f2f2f2",
                           borderLeft: "3px solid #FF6A00",
@@ -237,7 +263,7 @@ const Sidebar = () => {
             <List dense disablePadding>
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={() => handleNavigation("/")}
+                  onClick={handleLogout}
                   sx={{
                     px: 3,
                     py: 1,
@@ -245,9 +271,6 @@ const Sidebar = () => {
                     "&:hover": {
                       backgroundColor: "#f9f9f9",
                       transform: "translateX(4px)",
-                    },
-                    "&:active": {
-                      transform: "scale(0.98)",
                     },
                   }}
                 >
@@ -268,9 +291,9 @@ const Sidebar = () => {
           </Box>
         </Box>
       ) : (
-        // Main menu view
+        // Main menu view (different based on role)
         <>
-          {menuSections.map((section) => (
+          {(isMarketingUser ? marketingMenuSections : adminMenuSections).map((section) => (
             <Box key={section.title} sx={{ mb: 3 }}>
               <Typography
                 variant="subtitle2"
@@ -302,107 +325,102 @@ const Sidebar = () => {
                             backgroundColor: "#f9f9f9",
                             transform: "translateX(4px)",
                           },
-                          "&:active": {
-                            transform: "scale(0.98)",
-                          },
                           "&.Mui-selected": {
                             backgroundColor: "#f2f2f2",
                             borderLeft: "3px solid #FF6A00",
-                          },
-                        }}
-                      >
-                        <ListItemIcon
-                          sx={{
-                            color: isActive ? "#FF6A00" : "#999",
-                            minWidth: 36,
+                            },
                           }}
                         >
-                          <IconComponent fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={item.text}
-                          primaryTypographyProps={{
-                            fontSize: "0.875rem",
-                            fontWeight: isActive ? 500 : 400,
-                            color: isActive ? "#000" : "#333",
-                          }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  );
-                })}
-              </List>
-            </Box>
-          ))}
+                          <ListItemIcon
+                            sx={{
+                              color: isActive ? "#FF6A00" : "#999",
+                              minWidth: 36,
+                            }}
+                          >
+                            <IconComponent fontSize="small" />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={item.text}
+                            primaryTypographyProps={{
+                              fontSize: "0.875rem",
+                              fontWeight: isActive ? 500 : 400,
+                              color: isActive ? "#000" : "#333",
+                            }}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Box>
+            ))}
 
-          {/* Bottom: Settings + Logout */}
-          <Box sx={{ mt: "auto", borderTop: "1px solid #F0F0F0" }}>
-            <List disablePadding>
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => handleNavigation("/settings/employee-master")}
-                  selected={location.pathname.startsWith("/settings")}
-                  sx={{
-                    transition: "all 0.25s ease",
-                    "&:hover": {
-                      backgroundColor: "#f9f9f9",
-                      transform: "translateX(4px)",
-                    },
-                    "&:active": {
-                      transform: "scale(0.98)",
-                    },
-                  }}
-                >
-                  <ListItemIcon
+            {/* Bottom: Settings + Logout */}
+            <Box sx={{ mt: "auto", borderTop: "1px solid #F0F0F0" }}>
+              <List disablePadding>
+                {/* Hide Settings for marketing users */}
+                {!isMarketingUser && (
+                  <ListItem disablePadding>
+                    <ListItemButton
+                      onClick={() => handleNavigation("/settings/employee-master")}
+                      selected={location.pathname.startsWith("/settings")}
+                      sx={{
+                        transition: "all 0.25s ease",
+                        "&:hover": {
+                          backgroundColor: "#f9f9f9",
+                          transform: "translateX(4px)",
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          color: location.pathname.startsWith("/settings") ? "#FF6A00" : "#999",
+                        }}
+                      >
+                        <SettingsIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Settings"
+                        primaryTypographyProps={{
+                          fontSize: "0.875rem",
+                          fontWeight: location.pathname.startsWith("/settings") ? 500 : 400,
+                          color: location.pathname.startsWith("/settings") ? "#FF6A00" : "#333",
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                )}
+
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={handleLogout}
                     sx={{
-                      color: location.pathname.startsWith("/settings") ? "#FF6A00" : "#999",
+                      transition: "all 0.25s ease",
+                      "&:hover": {
+                        backgroundColor: "#f9f9f9",
+                        transform: "translateX(4px)",
+                      },
                     }}
                   >
-                    <NotificationIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Settings"
-                    primaryTypographyProps={{
-                      fontSize: "0.875rem",
-                      fontWeight: location.pathname.startsWith("/settings") ? 500 : 400,
-                      color: location.pathname.startsWith("/settings") ? "#FF6A00" : "#333",
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
+                    <ListItemIcon sx={{ color: "#999" }}>
+                      <ExitToAppIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Log Out"
+                      primaryTypographyProps={{
+                        fontSize: "0.875rem",
+                        fontWeight: 400,
+                        color: "#000000ff",
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </Box>
+          </>
+        )}
+      </Box>
+    );
+  };
 
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => handleNavigation("/")}
-                  sx={{
-                    transition: "all 0.25s ease",
-                    "&:hover": {
-                      backgroundColor: "#f9f9f9",
-                      transform: "translateX(4px)",
-                    },
-                    "&:active": {
-                      transform: "scale(0.98)",
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ color: "#999" }}>
-                    <ExitToAppIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Log Out"
-                    primaryTypographyProps={{
-                      fontSize: "0.875rem",
-                      fontWeight: 400,
-                      color: "#000000ff",
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </Box>
-        </>
-      )}
-    </Box>
-  );
-};
-export default Sidebar;
+  export default Sidebar;

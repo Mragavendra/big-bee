@@ -15,7 +15,7 @@ import {
   CircularProgress
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import leftImage from "../assets/leftside.png"; // Adjust path accordingly
+import leftImage from "../assets/leftside.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -33,28 +33,22 @@ export default function Login() {
     
     try {
       const data = await login(email, password);
+      console.log("Login response:", data);
+      
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userRole", data.role); // Store the role
+      localStorage.setItem("userRole", data.role);
+      localStorage.setItem("userEmail", data.email);
       
       // Redirect based on user role
       if (data.role === 'admin') {
         navigate("/admin-dashboard");
       } else if (data.role === 'marketing') {
         navigate("/marketing-dashboard");
-      } else if (data.role === 'business_dev') {
-        navigate("/business-dev-dashboard");
-      } else if (data.role === 'client_servicing') {
-        navigate("/client-servicing-dashboard");
-      } else if (data.role === 'creative') {
-        navigate("/creative-dashboard");
-      } else if (data.role === 'operations') {
-        navigate("/operations-dashboard");
       } else {
-        // Default redirect if role is not recognized
-        navigate("/dashboard");
+        navigate("/marketing-dashboard"); // Default to marketing
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Login failed. Please try again.";
+      const errorMessage = err.response?.data?.message || "Login failed. Please check your credentials.";
       setError(errorMessage);
       console.error("Login error:", errorMessage);
     } finally {
@@ -218,7 +212,7 @@ export default function Login() {
               sx={{
                 color: "#ff5722",
                 cursor: "pointer",
-                "&:hover": { textDecoration: "underline" },
+                "&:hover": { textDecoration: "underline", },
               }}
               onClick={() => navigate("/signup")}
             >
@@ -273,7 +267,7 @@ export default function Login() {
         {/* Demo credentials hint */}
         <Box sx={{ mt: 4, p: 2, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
           <Typography variant="body2" sx={{ color: '#757575', textAlign: 'center' }}>
-            <strong>Demo:</strong> Try admin@example.com / marketing@example.com
+            <strong>Demo:</strong> admin@gmail.com (Admin) / marketingteam@gmail.com (Marketing)
           </Typography>
         </Box>
       </Box>

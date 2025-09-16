@@ -4,6 +4,7 @@ import Layout from './layouts/Layout';
 
 // Existing imports
 import Dashboard from './pages/mainmenu/dashboardfold/Dashboard';
+import MarketingDashboard from './pages/mainmenu/marketingdashboard/MarketingDashboard';
 import LeadCapture from './pages/crm/LeadCapture/LeadCapture';
 import AddLeadsFormLayout from './pages/crm/LeadCapture/AddLeadsFormLayout';
 import FunnelReview from './pages/crm/funnelreview/FunnelReview';
@@ -74,6 +75,16 @@ import Login from './logins/Login.jsx';
 import Signup from './logins/Signup.jsx';
 import EditLeadsFormLayout from './pages/crm/LeadCapture/EditLeadsFormLayout.jsx';
 import FinancialMis from './pages/projectfinancials/financialmis/FinancialMis.jsx';
+import MarketingLeadCapture from './marketing-pages/crm/marketingleadcapture/MarketingLeadCapture.jsx';
+import MarketingLeadCaptureAdd from './marketing-pages/crm/marketingleadcapture/MarketingLeadCaptureAdd.jsx';
+import MarketingLeadCaptureEdit from './marketing-pages/crm/marketingleadcapture/MarketingLeadCaptureEdit.jsx';
+import FunnelReviewTable from './marketing-pages/crm/Funnel Review/FunnelReviewTable.jsx';
+import FunnelReviewAddForm from './marketing-pages/crm/Funnel Review/FunnelReviewAddForm.jsx';
+import FunnelReviewEdit from './marketing-pages/crm/Funnel Review/FunnelReviewEdit.jsx';
+import MarketingOrderTable from './marketing-pages/crm/Order/MarketingOrderTable.jsx';
+import MarketingOrderAddCom from './marketing-pages/crm/Order/MarketingOrderAddCom.jsx';
+import MarketingOrderAddEdit from './marketing-pages/crm/Order/MarketingOrderAddEdit.jsx';
+import MarketingKraTableLayout from './marketing-pages/Performance-Activity/kra/MarketingKraTableLayout.jsx';
 
 function App() {
   return (
@@ -83,8 +94,11 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
+        {/* Dashboard Routes - SEPARATE PATHS FOR DIFFERENT ROLES */}
+        <Route path="/admin-dashboard" element={<Dashboard />} />
+        <Route path="/marketing-dashboard" element={<MarketingDashboard />} />
+
         {/* Existing routes */}
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/lead-capture" element={<LeadCapture />} />
         <Route path="/lead-capture/add" element={<AddLeadsFormLayout />} />
         <Route path="/lead-capture/edit/:id" element={<EditLeadsFormLayout />} />
@@ -130,7 +144,7 @@ function App() {
         <Route path="/settings/category/add" element={<CategoryAdd />} />
         <Route path="/settings/category/edit/:id" element={<CategoryEdit />} />
         <Route path="/settings/action" element={<ActionTable />} />
-        <Route path="/settings/action/add" route element={<ActionAdd />} />
+        <Route path="/settings/action/add" element={<ActionAdd />} />
         <Route path="/settings/action/edit/:id" element={<ActionEdit />} />
         <Route path="/settings/status" element={<StatusTable />} />
         <Route path="/settings/status/add" element={<StatusAdd />} />
@@ -141,18 +155,33 @@ function App() {
         <Route path="/settings/company" element={<CompanyTable />} />
         <Route path="/settings/company/add" element={<CompanyAdd />} />
         <Route path="/settings/company/edit/:id" element={<CompanyEdit />} />
-        <Route path="/settings/services" element={<ServicesTable />} />
-        <Route path="/settings/services/add" element={<ServicesAdd />} />
-        <Route path="/settings/services/edit/:id" element={<ServicesEdit />} />
-        <Route path="/settings/campaign-type" element={<CampaignTypeTable />} />
-        <Route path="/settings/campaign-type/add" element={<CampaignTypeAdd />} />
-        <Route path="/settings/campaign-type/edit/:id" element={<CampaignTypeEdit />} />
-        <Route path="/settings/type-of-advertising" element={<TypeOfAdvertisingTable />} />
-        <Route path="/settings/type-of-advertising/add" element={<TypeOfAdvertisingAdd />} />
-        <Route path="/settings/type-of-advertising/edit/:id" element={<TypeOfAdvertisingEdit />} />
-        <Route path="/settings/marketing-channel" element={<MarketingChannelTable />} />
-        <Route path="/settings/marketing-channel/add" element={<MarketingChannelAdd />} />
-        <Route path="/settings/marketing-channel/edit/:id" element={<MarketingChannelEdit />} />
+        <Route path="/settings/services" element={<ServicesTable />}/>
+        <Route path="/settings/services/add" element={<ServicesAdd />}/>
+        <Route path="/settings/services/edit/:id" element={<ServicesEdit/>} />
+        <Route path="/settings/campaign-type" element={<CampaignTypeTable/>} />
+        <Route path="/settings/campaign-type/add" element={<CampaignTypeAdd/>} />
+        <Route path="/settings/campaign-type/edit/:id" element={<CampaignTypeEdit/>} />
+        <Route path="/settings/type-of-advertising" element={<TypeOfAdvertisingTable/>} />
+        <Route path="/settings/type-of-advertising/add" element={<TypeOfAdvertisingAdd/>} />
+        <Route path="/settings/type-of-advertising/edit/:id" element={<TypeOfAdvertisingEdit/>} />
+        <Route path="/settings/marketing-channel" element={<MarketingChannelTable />}/>
+        <Route path="/settings/marketing-channel/add" element={<MarketingChannelAdd />}/>
+        <Route path="/settings/marketing-channel/edit/:id" element={<MarketingChannelEdit/>}/>
+                         {/* MARKETING TEAM ROUTES */}
+        <Route path="/marketing-lead-capture" element={<MarketingLeadCapture />}/>
+        <Route path="/marketing-lead-capture/add" element={<MarketingLeadCaptureAdd/>}/>
+        <Route path="/marketing-lead-capture/edit/:id" element={<MarketingLeadCaptureEdit/>}/>
+        <Route path="/marketing-funnel-review" element={<FunnelReviewTable/>}/>
+        <Route path="/marketing-funnel-review/add" element={<FunnelReviewAddForm/>}/>
+        <Route path="/marketing-funnel-review/edit/:id" element={<FunnelReviewEdit/>}/>
+        <Route path="/Marketing-Order" element={<MarketingOrderTable/>}/>
+        <Route path="/Marketing-Order/add" element={<MarketingOrderAddCom/>}/>
+        <Route path="/Marketing-Order/edit/:id" element={<MarketingOrderAddEdit/>}/>
+
+        <Route path="/marketing-kra" element={<MarketingKraTableLayout/>}/>
+
+        {/* Default redirect for old /dashboard path */}
+        <Route path="/dashboard" element={<Login />} />
       </Routes>
     </Layout>
   );

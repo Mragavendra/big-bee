@@ -78,11 +78,10 @@ const AddLeadForm = ({ open, onClose, onSave }) => {
               label="Prospect"
               placeholder="Enter Description"
               value={formData.prospect}
-              onChange={handleInputChange('prospect')}
-            />
+              onChange={handleInputChange('prospect')}/>
           </Grid>
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
+          <FormControl fullWidth>
               <InputLabel>BDE</InputLabel>
               <Select
                 value={formData.bde}

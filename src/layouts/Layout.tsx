@@ -221,7 +221,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           width: '100%', // Full width for all cases
           minHeight: '100vh',
           backgroundColor: isAuthRoute ? '#fff' : '#F9F5EF',
-          display: isAuthRoute ? 'flex' : 'block', // Flex for centering login, block for others
+          display: isAuthRoute ? 'flex' : 'block', 
           justifyContent: isAuthRoute ? 'center' : 'flex-start',
           alignItems: isAuthRoute ? 'center' : 'stretch',
           overflow: 'hidden', // Prevent scrollbars

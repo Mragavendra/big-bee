@@ -44,6 +44,8 @@ export default function Login() {
         navigate("/admin-dashboard");
       } else if (data.role === 'marketing') {
         navigate("/marketing-dashboard");
+      } else if (data.role === 'businessanddevelopment') {
+        navigate("/businessand-development-dashboard");
       } else {
         navigate("/marketing-dashboard"); // Default to marketing
       }
@@ -267,7 +269,10 @@ export default function Login() {
         {/* Demo credentials hint */}
         <Box sx={{ mt: 4, p: 2, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
           <Typography variant="body2" sx={{ color: '#757575', textAlign: 'center' }}>
-            <strong>Demo:</strong> admin@gmail.com (Admin) / marketingteam@gmail.com (Marketing)
+            <strong>Demo:</strong><br />
+            admin@gmail.com (Admin)<br />
+            marketingteam@gmail.com (Marketing)<br />
+            businessanddevelopmentteam@gmail.com (Business & Development)
           </Typography>
         </Box>
       </Box>

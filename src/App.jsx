@@ -86,6 +86,8 @@ import MarketingOrderAddCom from './marketing-pages/crm/Order/MarketingOrderAddC
 import MarketingOrderAddEdit from './marketing-pages/crm/Order/MarketingOrderAddEdit.jsx';
 import MarketingKraTableLayout from './marketing-pages/Performance-Activity/kra/MarketingKraTableLayout.jsx';
 import MarketingMainRoi from './marketing-pages/Performance-Activity/meeting/Marketing.jsx';
+import MarketingMainRoiTracker from './marketing-pages/crm/Marketing-ROI-Tracker/MarketingMainRoiTracker.jsx';
+import BusinessandDevelopmentDashboard from './pages/mainmenu/businessanddevelopementteam/BusinessandDevelopementDashboard.jsx';
 
 function App() {
   return (
@@ -98,6 +100,7 @@ function App() {
         {/* Dashboard Routes - SEPARATE PATHS FOR DIFFERENT ROLES */}
         <Route path="/admin-dashboard" element={<Dashboard />} />
         <Route path="/marketing-dashboard" element={<MarketingDashboard />} />
+        <Route path="/businessanddevelopment-dashboard" element={<BusinessandDevelopmentDashboard />} />
 
         {/* Existing routes */}
         <Route path="/lead-capture" element={<LeadCapture />} />
@@ -181,6 +184,7 @@ function App() {
 
         <Route path="/marketing-kra" element={<MarketingKraTableLayout/>}/>
         <Route path="/marketing-Meeting" element={<MarketingMainRoi/>}/>
+        <Route path="/Marketing-ROI-Tracker" element={<MarketingMainRoiTracker/>}/>
 
         {/* Default redirect for old /dashboard path */}
         <Route path="/dashboard" element={<Login />} />

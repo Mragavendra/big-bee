@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
-import MarketingMeetingRoiTracker from "./MarketingDaily";
-import MarketingMonthlyBudget from "./MarketingWeekly";
-import MarketingOverallSummary from "./MarketingMonthly";
-import MarketingQuaterly from "./MarketingQuaterly";
+import MarketingMonthlyBudget from "./MarketingMainRoiTrackerMonthlyBudjet";
+import MarketingOverallSummary from "./MarketingMainRoiTrackerOverallSummary";
+import MarketingRoiTrackerMarketing from "./MarketingRoiTrackerMarketing";
 function TabPanel({ children, value, index }) {
   return (
     <div role="tabpanel" hidden={value !== index}>
@@ -63,25 +62,21 @@ const MarketingMainRoiTracker = () => {
               minHeight: "auto",
             }}
           >
-            <Tab label="Daily" sx={tabStyle(value === 0)} />
-            <Tab label="Weekly" sx={tabStyle(value === 1)} />
-            <Tab label="Monthly" sx={tabStyle(value === 2)} />
-            <Tab label="Quaterly" sx={tabStyle(value === 3)} />
+            <Tab label="Marketing" sx={tabStyle(value === 0)} />
+            <Tab label="Monthly Budjet" sx={tabStyle(value === 1)} />
+            <Tab label="Overall Summary" sx={tabStyle(value === 2)} />
           </Tabs>
         </Box>
       </Box>
       {/* Tab Panels */}
       <TabPanel value={value} index={0}>
-        <MarketingMeetingRoiTracker/>
+        <MarketingRoiTrackerMarketing/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <MarketingMonthlyBudget/>
       </TabPanel>
       <TabPanel value={value} index={2}>
         <MarketingOverallSummary/>
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <MarketingQuaterly/>
       </TabPanel>
     </Box>
   );

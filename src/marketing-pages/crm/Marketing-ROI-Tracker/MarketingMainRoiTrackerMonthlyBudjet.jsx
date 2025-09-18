@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import DynamicTable from "../../../table/DynamicTable";
 
-const MarketingMainRoiTrackerMonyhlyBudjet = () => {
+const MarketingMainRoiTrackerMonthlyBudjet = () => {
   const columns = [
     { id: "date", label: "Date", width: 100, align: "left" },
     { id: "time", label: "Time", width: 80, align: "left" },
@@ -87,4 +87,4 @@ const MarketingMainRoiTrackerMonyhlyBudjet = () => {
   );
 };
 
-export default MarketingMainRoiTrackerMonyhlyBudjet;
+export default MarketingMainRoiTrackerMonthlyBudjet;

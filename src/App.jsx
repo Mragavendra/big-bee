@@ -85,6 +85,7 @@ import MarketingOrderTable from './marketing-pages/crm/Order/MarketingOrderTable
 import MarketingOrderAddCom from './marketing-pages/crm/Order/MarketingOrderAddCom.jsx';
 import MarketingOrderAddEdit from './marketing-pages/crm/Order/MarketingOrderAddEdit.jsx';
 import MarketingKraTableLayout from './marketing-pages/Performance-Activity/kra/MarketingKraTableLayout.jsx';
+import MarketingMainRoi from './marketing-pages/Performance-Activity/meeting/Marketing.jsx';
 
 function App() {
   return (
@@ -179,6 +180,7 @@ function App() {
         <Route path="/Marketing-Order/edit/:id" element={<MarketingOrderAddEdit/>}/>
 
         <Route path="/marketing-kra" element={<MarketingKraTableLayout/>}/>
+        <Route path="/marketing-Meeting" element={<MarketingMainRoi/>}/>
 
         {/* Default redirect for old /dashboard path */}
         <Route path="/dashboard" element={<Login />} />

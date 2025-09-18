@@ -2,10 +2,14 @@ import React, { useState, useEffect } from "react";
 import { ChevronDown, Check } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate, useParams } from "react-router-dom";
 
-const MarketingLeadCaptureAdd = () => {
+const MarketingLeadCaptureEdit = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    enquiryNo: "LED044",
+    enquiryNo: "",
     leadDate: new Date(),
     leadType: "",
     leadSource: "",
@@ -26,6 +30,7 @@ const MarketingLeadCaptureAdd = () => {
   });
 
   const [loadingPincode, setLoadingPincode] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -34,10 +39,99 @@ const MarketingLeadCaptureAdd = () => {
     }));
   };
 
-  const handleSave = () => {
-    console.log("Form Data:", formData);
+  // Fetch existing lead
+  useEffect(() => {
+    const fetchLead = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`http://localhost:5000/api/marketing-leads/${id}`);
+        const data = await res.json();
+        if (res.ok) {
+          const lead = data.data;
+          setFormData({
+            enquiryNo: lead.enquiry_no || "",
+            leadDate: lead.lead_date ? new Date(lead.lead_date) : new Date(),
+            leadType: lead.lead_type || "",
+            leadSource: lead.lead_source || "",
+            notes: lead.notes || "",
+            prospect: lead.prospect || "",
+            contactPerson: lead.contact_person || "",
+            emailId: lead.email_id || "",
+            mobileNumber: lead.mobile_number || "",
+            department: lead.department || "",
+            designation: lead.designation || "",
+            addressLine1: lead.address_line1 || "",
+            state: lead.state || "",
+            city: lead.city || "",
+            pincode: lead.pincode || "",
+            bde: lead.bde || "",
+            clientServicingPerson: lead.client_servicing_person || "",
+            activeStatus: lead.active_status ?? true,
+          });
+        } else {
+          alert("Failed to fetch lead data");
+        }
+      } catch (error) {
+        console.error("Error fetching lead:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchLead();
+  }, [id]);
+
+  // Save updated lead
+  const handleUpdate = async () => {
+    const payload = {
+      enquiry_no: formData.enquiryNo,
+      lead_date: formData.leadDate
+        ? formData.leadDate.toISOString().split("T")[0]
+        : null,
+      lead_type: formData.leadType,
+      lead_source: formData.leadSource,
+      notes: formData.notes,
+      prospect: formData.prospect,
+      contact_person: formData.contactPerson,
+      email_id: formData.emailId,
+      mobile_number: formData.mobileNumber,
+      department: formData.department,
+      designation: formData.designation,
+      address_line1: formData.addressLine1,
+      state: formData.state,
+      city: formData.city,
+      pincode: formData.pincode,
+      bde: formData.bde,
+      client_servicing_person: formData.clientServicingPerson,
+      active_status: formData.activeStatus,
+    };
+
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/marketing-leads/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      const data = await res.json();
+      if (res.ok) {
+        alert("Lead updated successfully!");
+        navigate("/marketing-lead-capture");
+      } else {
+        alert("Error updating lead: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error updating lead:", error);
+      alert("Error connecting to server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Fetch City & State from Pincode
   const fetchAddressFromPincode = async (pincode) => {
     if (pincode.length !== 6) return;
 
@@ -74,73 +168,91 @@ const MarketingLeadCaptureAdd = () => {
     return () => clearTimeout(timer);
   }, [formData.pincode]);
 
+  if (loading) {
+    return (
+      <div className="p-6 flex items-center justify-center h-64">
+        <div className="text-lg text-gray-600">Loading lead data...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-4">
-      {/* Header with rounded corners */}
-      <div className="mx-auto">
-        <div className="bg-white rounded-t-lg shadow-sm">
-          <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200">
-            <h1 className="text-lg font-medium text-gray-900">Add Lead</h1>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <h1 className="text-xl font-semibold text-gray-900">Edit Lead</h1>
             <button
-              onClick={handleSave}
-              className="px-4 py-1.5 bg-orange-500 text-white text-sm font-medium rounded hover:bg-orange-600"
+              onClick={handleUpdate}
+              disabled={loading}
+              className={`px-6 py-2 text-white text-sm font-medium rounded-md ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600"
+              }`}
             >
-              Save
+              {loading ? "Updating..." : "Update"}
             </button>
           </div>
         </div>
 
-        {/* Form Content */}
-        <div className="bg-white shadow-sm border-x border-gray-200">
-          <div className="px-6 py-4">
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div className="space-y-6">
             {/* Basic Lead Details */}
-            <div className="mb-6">
-              <h2 className="text-base font-medium text-black mb-3">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-6">
                 Basic Lead Details
               </h2>
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-800 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Enquiry No*
                   </label>
                   <input
                     type="text"
                     value={formData.enquiryNo}
-                    onChange={(e) => handleInputChange("enquiryNo", e.target.value)}
-                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                    onChange={(e) =>
+                      handleInputChange("enquiryNo", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-800 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Lead Date*
                   </label>
                   <DatePicker
                     selected={formData.leadDate}
                     onChange={(date) => handleInputChange("leadDate", date)}
                     dateFormat="dd-MM-yyyy"
-                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-800 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Lead Type*
                   </label>
                   <div className="relative">
                     <select
                       value={formData.leadType}
-                      onChange={(e) => handleInputChange("leadType", e.target.value)}
-                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 appearance-none bg-white"
+                      onChange={(e) =>
+                        handleInputChange("leadType", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm appearance-none bg-white"
                     >
                       <option value=""></option>
                       <option value="hot">Hot Lead</option>
                       <option value="warm">Warm Lead</option>
                       <option value="cold">Cold Lead</option>
                     </select>
-                    <ChevronDown className="absolute right-2 top-2 h-3 w-3 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-800 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Lead Source*
                   </label>
                   <div className="relative">
@@ -149,7 +261,7 @@ const MarketingLeadCaptureAdd = () => {
                       onChange={(e) =>
                         handleInputChange("leadSource", e.target.value)
                       }
-                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 appearance-none bg-white"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm appearance-none bg-white"
                     >
                       <option value=""></option>
                       <option value="website">Website</option>
@@ -157,34 +269,105 @@ const MarketingLeadCaptureAdd = () => {
                       <option value="social">Social Media</option>
                       <option value="email">Email Campaign</option>
                     </select>
-                    <ChevronDown className="absolute right-2 top-2 h-3 w-3 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-800 mb-1">
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Notes
                 </label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => handleInputChange("notes", e.target.value)}
                   placeholder="Enter Description"
-                  rows={2}
-                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 resize-none placeholder-gray-400"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-none"
                 />
               </div>
             </div>
 
-            {/* Two Column Layout */}
-            <div className="grid grid-cols-2 gap-8">
-              {/* Client Information */}
-              <div>
-                <h2 className="text-base font-medium text-black mb-3">
-                  Client Information
-                </h2>
-                <div className="space-y-3">
+            {/* Address */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-6">Address</h2>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Address line 1
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.addressLine1}
+                    onChange={(e) =>
+                      handleInputChange("addressLine1", e.target.value)
+                    }
+                    placeholder="Enter Description"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-xs font-medium text-gray-800 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pincode*
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.pincode}
+                        onChange={(e) =>
+                          handleInputChange("pincode", e.target.value)
+                        }
+                        placeholder="Enter Pincode"
+                        maxLength="6"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      />
+                      {loadingPincode && (
+                        <div className="absolute right-3 top-2.5">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      City*
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.city}
+                      onChange={(e) => handleInputChange("city", e.target.value)}
+                      placeholder="City"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      State*
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.state}
+                      onChange={(e) => handleInputChange("state", e.target.value)}
+                      placeholder="State"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Client Information */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-6">
+                Client Information
+              </h2>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Prospect
                     </label>
                     <input
@@ -194,11 +377,41 @@ const MarketingLeadCaptureAdd = () => {
                         handleInputChange("prospect", e.target.value)
                       }
                       placeholder="Enter Description"
-                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-800 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email ID*
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.emailId}
+                      onChange={(e) =>
+                        handleInputChange("emailId", e.target.value)
+                      }
+                      placeholder="Enter Email address"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Department
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.department}
+                      onChange={(e) =>
+                        handleInputChange("department", e.target.value)
+                      }
+                      placeholder="Enter Department"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Contact Person
                     </label>
                     <input
@@ -208,238 +421,119 @@ const MarketingLeadCaptureAdd = () => {
                         handleInputChange("contactPerson", e.target.value)
                       }
                       placeholder="Enter Description"
-                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-800 mb-1">
-                        Email ID*
-                      </label>
-                      <input
-                        type="email"
-                        value={formData.emailId}
-                        onChange={(e) =>
-                          handleInputChange("emailId", e.target.value)
-                        }
-                        placeholder="Enter Email address"
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-800 mb-1">
-                        Mobile Number*
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.mobileNumber}
-                        onChange={(e) =>
-                          handleInputChange("mobileNumber", e.target.value)
-                        }
-                        placeholder="Enter Mobile Number"
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-800 mb-1">
-                        Department
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.department}
-                        onChange={(e) =>
-                          handleInputChange("department", e.target.value)
-                        }
-                        placeholder="Enter Department"
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-800 mb-1">
-                        Designation
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.designation}
-                        onChange={(e) =>
-                          handleInputChange("designation", e.target.value)
-                        }
-                        placeholder="Enter Designation"
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Internal Assignment */}
-              <div>
-                <h2 className="text-base font-medium text-black mb-3">
-                  Internal Assignment
-                </h2>
-                <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-800 mb-1">
-                      BDE
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Mobile Number*
                     </label>
-                    <div className="relative">
-                      <select
-                        value={formData.bde}
-                        onChange={(e) =>
-                          handleInputChange("bde", e.target.value)
-                        }
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 appearance-none bg-white text-gray-400"
-                      >
-                        <option value="">Select</option>
-                        <option value="bde1">BDE 1</option>
-                        <option value="bde2">BDE 2</option>
-                        <option value="bde3">BDE 3</option>
-                      </select>
-                      <ChevronDown className="absolute right-2 top-2 h-3 w-3 text-gray-400 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-800 mb-1">
-                      Client Servicing Person
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={formData.clientServicingPerson}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "clientServicingPerson",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 appearance-none bg-white text-gray-400"
-                      >
-                        <option value="">Select</option>
-                        <option value="person1">Person 1</option>
-                        <option value="person2">Person 2</option>
-                        <option value="person3">Person 3</option>
-                      </select>
-                      <ChevronDown className="absolute right-2 top-2 h-3 w-3 text-gray-400 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Control Section */}
-                <div className="mt-8">
-                  <h3 className="text-base font-medium text-black mb-3">
-                    Control:
-                  </h3>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-800 mb-2">
-                      Active Status*
-                    </label>
-                    <div
-                      className={`w-10 h-5 ${
-                        formData.activeStatus ? "bg-orange-500" : "bg-gray-300"
-                      } rounded-full p-0.5 cursor-pointer transition-colors duration-200 ease-in-out flex items-center`}
-                      onClick={() =>
-                        handleInputChange(
-                          "activeStatus",
-                          !formData.activeStatus
-                        )
+                    <input
+                      type="tel"
+                      value={formData.mobileNumber}
+                      onChange={(e) =>
+                        handleInputChange("mobileNumber", e.target.value)
                       }
-                    >
-                      <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-sm transform transition-transform duration-200 ease-in-out flex items-center justify-center ${
-                          formData.activeStatus
-                            ? "translate-x-5"
-                            : "translate-x-0"
-                        }`}
-                      >
-                        {formData.activeStatus && (
-                          <Check className="w-2.5 h-2.5 text-orange-500" />
-                        )}
-                      </div>
-                    </div>
+                      placeholder="Enter Mobile Number"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    />
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Address Section - separate container */}
-        <div className="bg-white shadow-sm border border-gray-200 border-t-0">
-          <div className="px-6 py-4">
-            <h2 className="text-base font-medium text-black mb-3">Address</h2>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-800 mb-1">
-                  Address line 1
-                </label>
-                <input
-                  type="text"
-                  value={formData.addressLine1}
-                  onChange={(e) =>
-                    handleInputChange("addressLine1", e.target.value)
-                  }
-                  placeholder="Enter Description"
-                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-800 mb-1">
-                    Pincode*
-                  </label>
-                  <div className="relative">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Designation
+                    </label>
                     <input
                       type="text"
-                      value={formData.pincode}
+                      value={formData.designation}
                       onChange={(e) =>
-                        handleInputChange("pincode", e.target.value)
+                        handleInputChange("designation", e.target.value)
                       }
-                      placeholder="Enter Pincode"
-                      maxLength="6"
-                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
+                      placeholder="Enter Designation"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                     />
-                    {loadingPincode && (
-                      <div className="absolute right-2 top-2">
-                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-orange-500"></div>
-                      </div>
-                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Internal Assignment */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-6">
+                Internal Assignment
+              </h2>
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    BDE
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={formData.bde}
+                      onChange={(e) => handleInputChange("bde", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm appearance-none bg-white"
+                    >
+                      <option value="">Select</option>
+                      <option value="bde1">BDE 1</option>
+                      <option value="bde2">BDE 2</option>
+                      <option value="bde3">BDE 3</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-800 mb-1">
-                    City*
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Client Servicing Person
                   </label>
-                  <input
-                    type="text"
-                    value={formData.city}
-                    onChange={(e) => handleInputChange("city", e.target.value)}
-                    placeholder="City"
-                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
-                  />
+                  <div className="relative">
+                    <select
+                      value={formData.clientServicingPerson}
+                      onChange={(e) =>
+                        handleInputChange("clientServicingPerson", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm appearance-none bg-white"
+                    >
+                      <option value="">Select</option>
+                      <option value="person1">Person 1</option>
+                      <option value="person2">Person 2</option>
+                      <option value="person3">Person 3</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-800 mb-1">
-                    State*
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.state}
-                    onChange={(e) => handleInputChange("state", e.target.value)}
-                    placeholder="State"
-                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 placeholder-gray-400"
-                  />
+              </div>
+            </div>
+
+            {/* Control */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-6">Control:</h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Active Status*
+                </label>
+                <div
+                  className={`w-11 h-6 ${
+                    formData.activeStatus ? "bg-orange-500" : "bg-gray-300"
+                  } rounded-full p-0.5 cursor-pointer transition-colors duration-200 ease-in-out flex items-center`}
+                  onClick={() =>
+                    handleInputChange("activeStatus", !formData.activeStatus)
+                  }
+                >
+                  <div
+                    className={`bg-white w-5 h-5 rounded-full shadow-sm transform transition-transform duration-200 ease-in-out flex items-center justify-center ${
+                      formData.activeStatus ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  >
+                    {formData.activeStatus && <Check className="w-3 h-3 text-orange-500" />}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Bottom rounded corners */}
-        <div className="bg-white rounded-b-lg shadow-sm h-2"></div>
       </div>
     </div>
   );
 };
 
-export default MarketingLeadCaptureAdd;
+export default MarketingLeadCaptureEdit;
+

@@ -69,18 +69,18 @@ const MarketingLeadCapture = () => {
   const fetchLeads = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/leads'); // Your GET API endpoint
+      const response = await fetch('http://localhost:5000/api/marketing-leads');
       const result = await response.json();
-      if (response.ok) {
+      if (response.ok && result.success) {
         // Map API fields to table columns
-        const mappedData = result.map((lead) => ({
-            id: lead.id,  // 🔥 required for edit navigation
+        const mappedData = result.data.map((lead) => ({
+          id: lead.id, // 🔥 required for edit/delete actions
           enquiryNo: lead.enquiry_no,
           leadDate: lead.lead_date,
           leadType: lead.lead_type,
           leadSource: lead.lead_source,
           prospect: lead.prospect,
-          mobileNumber: lead.mobile,
+          mobileNumber: lead.mobile_number,
           assignedBde: lead.bde,
           assignedCs: lead.client_servicing_person,
         }));

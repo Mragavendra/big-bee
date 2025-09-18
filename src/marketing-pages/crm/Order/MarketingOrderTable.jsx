@@ -163,8 +163,7 @@ const MarketingOrderTable = () => {
       disableEdit={false}
       disableDelete={false}
       disableView={false}
-      showAssignColumn={true}
-    />
+      showAssignColumn={true}/>
   );
 };
 
